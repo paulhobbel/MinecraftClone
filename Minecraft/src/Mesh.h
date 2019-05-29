@@ -1,8 +1,10 @@
 #pragma once
-class Mesh
-{
-public:
-	Mesh();
-	virtual ~Mesh();
-};
 
+#include <GLFW/glfw3.h>
+#include <vector>
+
+struct Mesh
+{
+	std::vector<GLfloat> vertices;
+	std::vector<GLfloat> texCoords;
+};

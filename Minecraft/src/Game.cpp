@@ -2,7 +2,7 @@
 
 #include "GLFW/glfw3.h"
 
-Game::Game()
+Game::Game() : m_world(m_camera)
 {
 	if (!glfwInit())
 		return;

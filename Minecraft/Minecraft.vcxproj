@@ -124,8 +124,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\World\Chunk\ChunkMesh.cpp" />
-    <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\Renderer\MainRenderer.cpp" />
     <ClCompile Include="src\Renderer\ChunkRenderer.cpp" />
     <ClCompile Include="src\World\Block\Block.cpp" />
@@ -133,10 +133,17 @@
     <ClCompile Include="src\World\Chunk\ChunkProvider.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\World\Chunk\ChunkSection.cpp" />
+    <ClCompile Include="src\World\Generation\Terrain\FlatTerrainGenerator.cpp" />
     <ClCompile Include="src\World\World.cpp" />
     <ClCompile Include="src\Math\Vec2.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\Constants.h" />
+    <ClInclude Include="src\Entity.h" />
+    <ClInclude Include="src\Model.h" />
+    <ClInclude Include="src\World\Block\BlockId.h" />
     <ClInclude Include="src\World\Chunk\ChunkMesh.h" />
     <ClInclude Include="src\Mesh.h" />
     <ClInclude Include="src\Renderer\IRenderer.h" />
@@ -146,6 +153,9 @@
     <ClInclude Include="src\World\Chunk\Chunk.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\World\Chunk\ChunkProvider.h" />
+    <ClInclude Include="src\World\Chunk\ChunkSection.h" />
+    <ClInclude Include="src\World\Generation\Terrain\FlatTerrainGenerator.h" />
+    <ClInclude Include="src\World\Generation\Terrain\TerrainGenerator.h" />
     <ClInclude Include="src\World\World.h" />
     <ClInclude Include="src\Math\Vec2.h" />
   </ItemGroup>

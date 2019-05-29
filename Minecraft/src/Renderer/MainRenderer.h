@@ -1,13 +1,15 @@
 #pragma once
 
-class ChunkRenderer;
+#include "ChunkRenderer.h"
+
+class Camera;
 
 class MainRenderer
 {
 public:
-	void PreRender();
-	void Render();
-	void PostRender();
+	void PreRender(const Camera& camera);
+	void Render(const Camera& camera);
+	void PostRender(const Camera& camera);
 
 private:
 	ChunkRenderer m_chunkRenderer;

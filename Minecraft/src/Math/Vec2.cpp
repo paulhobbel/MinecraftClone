@@ -17,3 +17,9 @@ bool Vec2::operator==(const Vec2& other)
 	return x == other.x && y == other.y;
 }
 
+bool operator==(const Vec2& left, const Vec2& right) noexcept
+{
+	return  (left.x == right.x) &&
+		(left.y == right.y);
+}
+

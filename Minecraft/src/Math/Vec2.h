@@ -21,6 +21,8 @@ public:
 	bool operator == (const Vec2& other);
 };
 
+bool operator == (const Vec2& left, const Vec2& right) noexcept;
+
 namespace std
 {
 	template<>
