@@ -5,7 +5,7 @@ World::World() : m_chunkProvider(*this)
 
 }
 
-ChuckProvider& World::GetChunkProvider()
+ChunkProvider& World::GetChunkProvider()
 {
 	return m_chunkProvider;
 }

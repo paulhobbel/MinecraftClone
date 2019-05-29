@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Chuck/ChuckProvider.h"
+#include "Chunk/ChunkProvider.h"
 
 class World
 {
@@ -8,9 +8,9 @@ public:
 	World();
 	~World();
 
-	ChuckProvider& GetChunkProvider();
+	ChunkProvider& GetChunkProvider();
 
 private:
-	ChuckProvider m_chunkProvider;
+	ChunkProvider m_chunkProvider;
 };
 

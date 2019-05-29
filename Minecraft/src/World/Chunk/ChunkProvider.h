@@ -7,11 +7,11 @@
 
 class World;
 
-class ChuckProvider
+class ChunkProvider
 {
 public:
-	ChuckProvider(World& world);
-	~ChuckProvider();
+	ChunkProvider(World& world);
+	~ChunkProvider();
 
 	Chunk& GetChunk(int x, int y);
 	bool ChunkExists(int x, int y) const;
