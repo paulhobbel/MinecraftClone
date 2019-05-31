@@ -13,6 +13,18 @@ void ChunkMesh::AddFace(const std::array<GLfloat, 12>& blockFace, const std::arr
 		m_mesh.vertices.push_back(blockFace[face++] + chunkPosition.y * CHUNK_SIZE + blockPosition.y);
 		m_mesh.vertices.push_back(blockFace[face++] + chunkPosition.z * CHUNK_SIZE + blockPosition.z);
 	}
+
+	m_mesh.indices.insert(m_mesh.indices.end(),
+		{
+			m_indiceIndex,
+			m_indiceIndex + 1,
+			m_indiceIndex + 2,
+			m_indiceIndex + 2,
+			m_indiceIndex + 3,
+			m_indiceIndex
+		});
+
+	m_indiceIndex += 4;
 }
 
 const Mesh ChunkMesh::GetMesh() const

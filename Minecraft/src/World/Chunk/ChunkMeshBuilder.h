@@ -2,12 +2,12 @@
 
 #include <array>
 
-#include <GLFW/glfw3.h>
+#include <glad/glad.h>
 #include <glm/vec3.hpp>
 
 class ChunkSection;
 class ChunkMesh;
-class Block;
+struct Block;
 
 class ChunkMeshBuilder
 {
@@ -24,5 +24,5 @@ private:
 
 	ChunkSection* m_section;
 	ChunkMesh* m_mesh;
-	const Block* m_block;
+	const Block* m_block = nullptr;
 };

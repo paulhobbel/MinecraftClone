@@ -1,9 +1,12 @@
-#include <GLFW/glfw3.h>
 #include <glm/vec3.hpp>
 
 #include "../World/Chunk/ChunkMesh.h"
 #include "ChunkRenderer.h"
 #include "../Camera.h"
+
+#include "../Model.h"
+#include "../Shader/Shader.h"
+#include "../Texture/Texture.h"
 
 namespace
 {
@@ -56,14 +59,47 @@ namespace
 	};
 }
 
+//Mesh mesh;
+Model model;
+
 ChunkRenderer::ChunkRenderer()
 {
 	ChunkMesh mesh;
 	
+	mesh.AddFace(frontFace, {
+		0, 1,
+		1, 1,
+		1, 0,
+		0, 0
+	}, { 0, 0, 0 }, { 0, 0, 0 });
+	mesh.AddFace(frontFace, { 0, 1, 2, 2, 3, 0 }, { 0, 0, 0 }, { 1, 0, 0 });
+	mesh.AddFace(frontFace, { 0, 1, 2, 2, 3, 0 }, { 0, 0, 0 }, { -1, 0, 0 });
 
-	mesh.AddFace(frontFace, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 });
+	mesh.AddFace(topFace, { 0, 1, 2, 2, 3, 0 }, { 0, 0, 0 }, { -1, 0, 0 });
+	mesh.AddFace(topFace, { 0, 1, 2, 2, 3, 0 }, { 0, 0, 0 }, { 0, 0, 0 });
+	mesh.AddFace(topFace, { 0, 1, 2, 2, 3, 0 }, { 0, 0, 0 }, { 1, 0, 0 });
+
+	mesh.AddFace(rightFace, { 0, 1, 2, 2, 3, 0 }, { 0, 0, 0 }, { 1, 0, 0 });
+	mesh.AddFace(leftFace, { 0, 1, 2, 2, 3, 0 }, { 0, 0, 0 }, { -1, 0, 0 });
 
 	m_chunks.push_back(mesh);
+
+	
+	/*mesh.vertices = {
+		0, 0, 0,
+		1, 0, 0,
+		0, 1, 0,
+		
+		1, 0, 0,
+		1, 1, 0,
+		0, 1, 0
+	};
+
+	mesh.indices = {
+		0, 1, 2, 3, 4, 5
+	};*/
+
+	//model.AddData(mesh);
 }
 
 void ChunkRenderer::Add(const ChunkMesh& mesh)
@@ -73,6 +109,7 @@ void ChunkRenderer::Add(const ChunkMesh& mesh)
 
 void ChunkRenderer::Render(Camera& camera)
 {
+	//model.AddData();
 	camera.LoadProjectionMatrix();
 
 	if (m_chunks.empty())
@@ -84,45 +121,24 @@ void ChunkRenderer::Render(Camera& camera)
 
 	//glDisable(GL_BLEND);
 	glEnable(GL_CULL_FACE);
+	glEnable(GL_TEXTURE_2D);
 	glColor3f(0, 0, 0);
 
-	// Front
-	/*glBegin(GL_TRIANGLES);
-	glVertex3f(0, 0, 0);
-	glVertex3f(1, 0, 0);
-	glVertex3f(0, 1, 0);
+	ChunkShader shader;
+	shader.UseProgram();
 
-	glVertex3f(1, 0, 0);
-	glVertex3f(1, 1, 0);
-	glVertex3f(0, 1, 0);
-	glEnd();*/
+	Texture texture("res/textures/dirt.png");
+	texture.Bind();
 
-	// Back
-	glBegin(GL_TRIANGLES);
-	glVertex3f(0, 1, 0);
-	glVertex3f(1, 0, 0);
-	glVertex3f(0, 0, 0);
-
-	glVertex3f(0, 1, 0);
-	glVertex3f(1, 1, 0);
-	glVertex3f(1, 0, 0);
-	glEnd();
-
-	glEnableClientState(GL_VERTEX_ARRAY);
 	// Bind textures
 
 	for (auto& mesh : m_chunks)
 	{
-		camera.LoadViewMatrix();
+		model.AddData(mesh.GetMesh());
+		model.BindVAO();
 
-		glVertexPointer(3, GL_FLOAT, mesh.GetMesh().vertices.size() * sizeof(std::vector<GLfloat>), mesh.GetMesh().vertices.data());
-
-		glDrawArrays(GL_TRIANGLES, 0, mesh.GetMesh().vertices.size());
-
-		// Render mesh
+		glDrawElements(GL_TRIANGLES, model.GetIndicesCount(), GL_UNSIGNED_INT, nullptr);
 	}
-
-	glDisableClientState(GL_VERTEX_ARRAY);
 
 	//m_chunks.clear();
 }

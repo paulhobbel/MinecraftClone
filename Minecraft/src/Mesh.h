@@ -7,4 +7,5 @@ struct Mesh
 {
 	std::vector<GLfloat> vertices;
 	std::vector<GLfloat> texCoords;
+	std::vector<GLuint> indices;
 };

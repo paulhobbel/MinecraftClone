@@ -4,6 +4,7 @@
 #include <vector>
 #include <functional>
 #include <glm/vec2.hpp>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 class GameWindow

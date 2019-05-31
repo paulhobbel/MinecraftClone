@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include "../Shader/ChunkShader.h"
+
 class Camera;
 class ChunkMesh;
 
@@ -14,5 +16,7 @@ public:
 	void Render(Camera& camera);
 private:
 	std::vector<ChunkMesh> m_chunks;
+
+	//ChunkShader m_shader;
 };
 

@@ -1,14 +1,15 @@
-#include "Game.h"
-
 #include <iostream>
 #include <functional>
-#include "GLFW/glfw3.h"
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
+#include "Game.h"
 
 Game::Game() : m_world(m_camera)
 {
 	if (!glfwInit())
-		return;
-	//exit(-1);
+		exit(EXIT_FAILURE);
+	
 
 	m_window = new GameWindow(1280, 720, "Minecraft");
 
@@ -22,6 +23,9 @@ Game::Game() : m_world(m_camera)
 
 	//m_camera.position.x = -5;
 	m_camera.position.z = -20;
+	m_camera.rotation.y = 0;
+	m_camera.rotation.x = 5;
+	//m_camera.rotation.z = 45;
 
 	m_window->SetInputCallback([this](int key, int scanCode, int action, int mods) {
 		switch (key)

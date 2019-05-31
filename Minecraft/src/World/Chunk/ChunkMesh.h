@@ -2,7 +2,7 @@
 
 #include <array>
 #include <glm/vec3.hpp>
-#include <GLFW/glfw3.h>
+#include <glad/glad.h>
 
 #include "../../Mesh.h"
 
@@ -20,5 +20,6 @@ public:
 
 private:
 	Mesh m_mesh;
+	unsigned int m_indiceIndex = 0;
 };
 

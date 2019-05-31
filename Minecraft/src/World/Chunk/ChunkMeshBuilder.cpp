@@ -75,6 +75,7 @@ struct AdjacentBlockPositions
 
 ChunkMeshBuilder::ChunkMeshBuilder(ChunkSection& section, ChunkMesh& mesh) : m_section(&section), m_mesh(&mesh)
 {
+	m_block = nullptr;
 }
 
 void ChunkMeshBuilder::Build()

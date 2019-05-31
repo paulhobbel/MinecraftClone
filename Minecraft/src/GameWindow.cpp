@@ -22,6 +22,10 @@ GameWindow::GameWindow(int width, int height, std::string title)
 
 		self.OnResize(width, height);
 	});
+
+	glfwSetErrorCallback([](int errorCode, const char* description) {
+		std::cout << "[ERROR/GameWindow] code: " << errorCode << ", description: " << description << std::endl;
+	});
 }
 
 bool GameWindow::Initialized()
@@ -64,6 +68,8 @@ void GameWindow::SetInputCallback(std::function<void(int key, int scanCode, int 
 void GameWindow::SetGLContext()
 {
 	glfwMakeContextCurrent(m_handle);
+	gladLoadGL();
+	//gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
 }
 
 void GameWindow::SwapBuffers()
