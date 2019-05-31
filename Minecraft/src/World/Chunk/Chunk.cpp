@@ -1,4 +1,5 @@
 #include "Chunk.h"
+#include "../../Renderer/MainRenderer.h"
 #include "../Generation/Terrain/TerrainGenerator.h"
 
 Chunk::Chunk(World& world, const Vec2& position)
@@ -29,6 +30,28 @@ void Chunk::Load(TerrainGenerator& generator)
 	generator.GenerateTerrain(*this);
 
 	m_loaded = true;
+}
+
+void Chunk::MakeMesh()
+{
+	for (auto& section : m_sections)
+	{
+		// Check if mesh wasn't already generated
+		// Check if section is even visible
+
+		section.MakeMesh();
+	}
+}
+
+void Chunk::Render(MainRenderer& renderer)
+{
+	for (auto& section : m_sections)
+	{
+		// Check if mesh is generated
+		// Check if section is even visible
+
+		//renderer.Add(section.GetMesh());
+	}
 }
 
 ChunkSection& Chunk::GetSection(int index)

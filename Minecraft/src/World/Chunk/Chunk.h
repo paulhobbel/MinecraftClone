@@ -25,6 +25,7 @@ public:
 
 	void Load(TerrainGenerator& generator);
 
+	void MakeMesh();
 	
 	void Render(MainRenderer& renderer);
 

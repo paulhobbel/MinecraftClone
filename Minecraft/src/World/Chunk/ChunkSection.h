@@ -3,6 +3,8 @@
 #include <array>
 #include <glm/vec3.hpp>
 
+#include "ChunkMesh.h"
+#include "ChunkMeshBuilder.h"
 #include "../Block/Block.h"
 #include "../../Constants.h"
 
@@ -19,6 +21,12 @@ public:
 
 	const glm::vec3 GetPosition() const;
 
+
+	void MakeMesh();
+	const ChunkMesh& GetMesh() const;
+
+	const Block* Begin() { return &m_blocks[0]; }
+
 private:
 	static int GetBlockIndex(int x, int y, int z);
 
@@ -26,5 +34,6 @@ private:
 
 	std::array<Block, CHUNK_VOLUME> m_blocks;
 
+	ChunkMesh m_mesh;
 	World* m_world;
 };

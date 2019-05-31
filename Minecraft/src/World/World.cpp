@@ -9,7 +9,7 @@ World::World(const Camera& camera) : m_chunkProvider(*this)
 	{
 		m_chunkThreads.emplace_back([&]()
 			{
-				LoadChunks(camera);
+				//LoadChunks(camera);
 			});
 	}
 }

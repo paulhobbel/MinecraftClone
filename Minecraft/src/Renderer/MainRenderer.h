@@ -7,9 +7,7 @@ class Camera;
 class MainRenderer
 {
 public:
-	void PreRender(const Camera& camera);
-	void Render(const Camera& camera);
-	void PostRender(const Camera& camera);
+	void Render(Camera& camera);
 
 private:
 	ChunkRenderer m_chunkRenderer;

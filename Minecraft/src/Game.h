@@ -3,6 +3,8 @@
 #include <GLFW/glfw3.h>
 
 #include "Camera.h"
+#include "GameWindow.h"
+#include "Renderer/MainRenderer.h"
 #include "World/World.h"
 
 class Game
@@ -12,10 +14,14 @@ public:
 	~Game();
 
 	void Run();
+	World& GetWorld();
+
 private:
-	GLFWwindow* m_window = nullptr;
+	GameWindow* m_window = nullptr;
 
 	Camera m_camera;
 	World m_world;
+
+	MainRenderer m_renderer;
 };
 

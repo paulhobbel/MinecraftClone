@@ -10,7 +10,7 @@ void Logger::Log(const char* format, ...)
 
 	int len = _vscprintf(format, args) + 1;
 	char* message = new char[len];
-	vsprintf(message, format, args);
+	//vsprintf(message, format, args);
 
 	va_end(args);
 }

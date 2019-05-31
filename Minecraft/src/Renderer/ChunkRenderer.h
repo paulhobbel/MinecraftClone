@@ -8,8 +8,10 @@ class ChunkMesh;
 class ChunkRenderer
 {
 public:
+	ChunkRenderer();
+
 	void Add(const ChunkMesh& mesh);
-	void Render(const Camera& camera);
+	void Render(Camera& camera);
 private:
 	std::vector<ChunkMesh> m_chunks;
 };

@@ -25,6 +25,16 @@ const glm::vec3 ChunkSection::GetPosition() const
 	return m_position;
 }
 
+void ChunkSection::MakeMesh()
+{
+	ChunkMeshBuilder(*this, m_mesh).Build();
+}
+
+const ChunkMesh& ChunkSection::GetMesh() const
+{
+	return m_mesh;
+}
+
 int ChunkSection::GetBlockIndex(int x, int y, int z)
 {
 	return y * CHUNK_SIZE + z * CHUNK_SIZE + x;
