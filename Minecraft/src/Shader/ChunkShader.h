@@ -15,5 +15,5 @@ public:
 private:
 	void GetUniforms() override;
 
-	GLuint m_projViewMatrixLocation;
+	GLint m_projViewMatrixLocation = -1;
 };

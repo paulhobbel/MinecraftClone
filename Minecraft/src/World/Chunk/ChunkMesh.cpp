@@ -2,8 +2,7 @@
 
 #include "../../Constants.h"
 
-
-void ChunkMesh::AddFace(const std::array<GLfloat, 12>& blockFace, const std::array<GLfloat, 8> texCoords, const glm::vec3 chunkPosition, const glm::vec3 blockPosition)
+void ChunkMesh::AddFace(const std::array<GLfloat, 12>& blockFace, const std::array<GLfloat, 8> texCoords, const glm::vec3 chunkPosition, const glm::vec3 blockPosition, GLfloat cardinalLight)
 {
 	m_mesh.texCoords.insert(m_mesh.texCoords.end(), texCoords.begin(), texCoords.end());
 
@@ -12,6 +11,7 @@ void ChunkMesh::AddFace(const std::array<GLfloat, 12>& blockFace, const std::arr
 		m_mesh.vertices.push_back(blockFace[face++] + chunkPosition.x * CHUNK_SIZE + blockPosition.x);
 		m_mesh.vertices.push_back(blockFace[face++] + chunkPosition.y * CHUNK_SIZE + blockPosition.y);
 		m_mesh.vertices.push_back(blockFace[face++] + chunkPosition.z * CHUNK_SIZE + blockPosition.z);
+		m_lights.push_back(cardinalLight);
 	}
 
 	m_mesh.indices.insert(m_mesh.indices.end(),
@@ -24,10 +24,27 @@ void ChunkMesh::AddFace(const std::array<GLfloat, 12>& blockFace, const std::arr
 			m_indiceIndex
 		});
 
+	// TexCoord | LightValue
 	m_indiceIndex += 4;
 }
 
-const Mesh ChunkMesh::GetMesh() const
+void ChunkMesh::BufferMesh()
 {
-	return m_mesh;
+	m_model.Create(m_mesh);
+	m_model.AddVBO(1, m_lights);
+
+	m_mesh.indices.clear();
+	m_mesh.vertices.clear();
+	m_mesh.texCoords.clear();
+
+	m_mesh.indices.shrink_to_fit();
+	m_mesh.vertices.shrink_to_fit();
+	m_mesh.texCoords.shrink_to_fit();
+
+	m_indiceIndex = 0;
+}
+
+Model& ChunkMesh::GetModel()
+{
+	return m_model;
 }

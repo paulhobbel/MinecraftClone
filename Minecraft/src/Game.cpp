@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "Keyboard.h"
 #include "Game.h"
 
 Game::Game() : m_world(m_camera)
@@ -21,30 +22,22 @@ Game::Game() : m_world(m_camera)
 
 	m_window->SetGLContext();
 
+	// Initialize everything that needs opengl
+	m_renderer.Init();
+
 	//m_camera.position.x = -5;
-	m_camera.position.z = -20;
-	m_camera.rotation.y = 0;
-	m_camera.rotation.x = 5;
+	m_camera.position.y = 1.5;
+	m_camera.position.z = 3.5;
+	//m_camera.rotation.y = 0;
+	//m_camera.rotation.x = 5;
 	//m_camera.rotation.z = 45;
 
+	m_window->SetResizeCallback([this](glm::vec2 windowSize) {
+		m_camera.SetPerspective(windowSize);
+	});
+
 	m_window->SetInputCallback([this](int key, int scanCode, int action, int mods) {
-		switch (key)
-		{
-		case GLFW_KEY_W:
-			m_camera.position.z += 1;
-			break;
-		case GLFW_KEY_S:
-			m_camera.position.z -= 1;
-			break;
-		case GLFW_KEY_A:
-			m_camera.position.x += 1;
-			break;
-		case GLFW_KEY_D:
-			m_camera.position.x -= 1;
-			break;
-		default:
-			break;
-		}
+		Keyboard::UpdateKey(key, action);
 	});
 }
 
@@ -62,11 +55,15 @@ void Game::Run()
 
 	while (!m_window->IsOpen())
 	{
+		m_camera.Update(m_window);
+
 		/* Render here */
 		m_renderer.Render(m_camera);
 
 		/* Swap front and back buffers */
 		m_window->SwapBuffers();
+
+		//std::cout << glGetError() << std::endl;
 
 		/* Poll for and process events */
 		glfwPollEvents();

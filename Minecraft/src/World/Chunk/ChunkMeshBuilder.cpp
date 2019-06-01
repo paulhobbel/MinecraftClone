@@ -51,6 +51,11 @@ namespace
 		1, 0, 1,
 		0, 0, 1
 	};
+
+	constexpr GLfloat LIGHT_TOP = 1.0f;
+	constexpr GLfloat LIGHT_X = 0.8f;
+	constexpr GLfloat LIGHT_Z = 0.6f;
+	constexpr GLfloat LIGHT_BOT = 0.4f;
 }
 
 struct AdjacentBlockPositions
@@ -101,22 +106,23 @@ void ChunkMeshBuilder::Build()
 		directions.Update(x, y, z);
 
 
-		TryAddFace(bottomFace, position, position, directions.down);
-		TryAddFace(topFace, position, position, directions.up);
+		TryAddFace(bottomFace, position, position, directions.down, LIGHT_BOT);
+		TryAddFace(topFace, position, position, directions.up, LIGHT_TOP);
 
-		TryAddFace(leftFace, position, position, directions.left);
-		TryAddFace(rightFace, position, position, directions.right);
+		TryAddFace(leftFace, position, position, directions.left, LIGHT_X);
+		TryAddFace(rightFace, position, position, directions.right, LIGHT_X);
 
-		TryAddFace(frontFace, position, position, directions.front);
-		TryAddFace(backFace, position, position, directions.back);
+		TryAddFace(frontFace, position, position, directions.front, LIGHT_Z);
+		TryAddFace(backFace, position, position, directions.back, LIGHT_Z);
 	}
 }
 
-void ChunkMeshBuilder::TryAddFace(const std::array<GLfloat, 12>& blockFace, const glm::vec3& texCoords, const glm::vec3& blockPosition, const glm::vec3& blockFacing)
+void ChunkMeshBuilder::TryAddFace(const std::array<GLfloat, 12>& blockFace, const glm::vec3& texCoords, const glm::ivec3& blockPosition, const glm::ivec3& blockFacing, GLfloat cardinalLight)
 {
+	m_mesh->AddFace(blockFace, { 0, 1, 1, 1, 1, 0, 0, 0 }, m_section->GetPosition(), blockPosition, cardinalLight);
 }
 
-bool ChunkMeshBuilder::ShouldMakeFace(const glm::vec3& blockPosition)
+bool ChunkMeshBuilder::ShouldMakeFace(const glm::ivec3& blockPosition)
 {
 	auto block = m_section->GetBlock(blockPosition.x, blockPosition.y, blockPosition.y);
 
@@ -125,5 +131,7 @@ bool ChunkMeshBuilder::ShouldMakeFace(const glm::vec3& blockPosition)
 
 	// TODO: Add more checks
 
-	return false;
+	return true;
+
+	//return false;
 }

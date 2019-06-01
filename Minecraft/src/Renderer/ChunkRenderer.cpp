@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <glm/vec3.hpp>
 
 #include "../World/Chunk/ChunkMesh.h"
@@ -57,30 +59,27 @@ namespace
 		1, 0, 1,
 		0, 0, 1
 	};
-}
 
-//Mesh mesh;
-Model model;
+	constexpr GLfloat LIGHT_TOP = 1.0f;
+	constexpr GLfloat LIGHT_X = 0.8f;
+	constexpr GLfloat LIGHT_Z = 0.6f;
+	constexpr GLfloat LIGHT_BOT = 0.4f;
+}
 
 ChunkRenderer::ChunkRenderer()
 {
 	ChunkMesh mesh;
 	
-	mesh.AddFace(frontFace, {
-		0, 1,
-		1, 1,
-		1, 0,
-		0, 0
-	}, { 0, 0, 0 }, { 0, 0, 0 });
-	mesh.AddFace(frontFace, { 0, 1, 2, 2, 3, 0 }, { 0, 0, 0 }, { 1, 0, 0 });
-	mesh.AddFace(frontFace, { 0, 1, 2, 2, 3, 0 }, { 0, 0, 0 }, { -1, 0, 0 });
+	mesh.AddFace(frontFace, { 0, 1, 1, 1, 1, 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, LIGHT_Z);
+	mesh.AddFace(frontFace, { 0, 1, 1, 1, 1, 0, 0, 0 }, { 0, 0, 0 }, { 1, 0, 0 }, LIGHT_Z);
+	mesh.AddFace(frontFace, { 0, 1, 1, 1, 1, 0, 0, 0 }, { 0, 0, 0 }, { -1, 0, 0 }, LIGHT_Z);
 
-	mesh.AddFace(topFace, { 0, 1, 2, 2, 3, 0 }, { 0, 0, 0 }, { -1, 0, 0 });
-	mesh.AddFace(topFace, { 0, 1, 2, 2, 3, 0 }, { 0, 0, 0 }, { 0, 0, 0 });
-	mesh.AddFace(topFace, { 0, 1, 2, 2, 3, 0 }, { 0, 0, 0 }, { 1, 0, 0 });
+	mesh.AddFace(topFace, { 0, 1, 1, 1, 1, 0, 0, 0 }, { 0, 0, 0 }, { -1, 0, 0 }, LIGHT_TOP);
+	mesh.AddFace(topFace, { 0, 1, 1, 1, 1, 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, LIGHT_TOP);
+	mesh.AddFace(topFace, { 0, 1, 1, 1, 1, 0, 0, 0 }, { 0, 0, 0 }, { 1, 0, 0 }, LIGHT_TOP);
 
-	mesh.AddFace(rightFace, { 0, 1, 2, 2, 3, 0 }, { 0, 0, 0 }, { 1, 0, 0 });
-	mesh.AddFace(leftFace, { 0, 1, 2, 2, 3, 0 }, { 0, 0, 0 }, { -1, 0, 0 });
+	mesh.AddFace(rightFace, { 0, 1, 1, 1, 1, 0, 0, 0 }, { 0, 0, 0 }, { 1, 0, 0 }, LIGHT_X);
+	mesh.AddFace(leftFace, { 0, 1, 1, 1, 1, 0, 0, 0 }, { 0, 0, 0 }, { -1, 0, 0 }, LIGHT_X);
 
 	m_chunks.push_back(mesh);
 
@@ -102,6 +101,18 @@ ChunkRenderer::ChunkRenderer()
 	//model.AddData(mesh);
 }
 
+void ChunkRenderer::Init()
+{
+	m_shader.Create();
+
+	for (auto& mesh : m_chunks)
+	{
+		mesh.BufferMesh();
+	}
+
+	std::cout << glGetError() << std::endl;
+}
+
 void ChunkRenderer::Add(const ChunkMesh& mesh)
 {
 	m_chunks.push_back(mesh);
@@ -110,22 +121,22 @@ void ChunkRenderer::Add(const ChunkMesh& mesh)
 void ChunkRenderer::Render(Camera& camera)
 {
 	//model.AddData();
-	camera.LoadProjectionMatrix();
+	//camera.LoadProjectionMatrix();
 
 	if (m_chunks.empty())
 	{
 		return;
 	}
 
-	camera.LoadViewMatrix();
+	//camera.LoadViewMatrix();
 
 	//glDisable(GL_BLEND);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_TEXTURE_2D);
-	glColor3f(0, 0, 0);
 
-	ChunkShader shader;
-	shader.UseProgram();
+	m_shader.UseProgram();
+
+	m_shader.LoadProjectionViewMatrix(camera.getProjectionViewMatrix());
 
 	Texture texture("res/textures/dirt.png");
 	texture.Bind();
@@ -134,11 +145,16 @@ void ChunkRenderer::Render(Camera& camera)
 
 	for (auto& mesh : m_chunks)
 	{
-		model.AddData(mesh.GetMesh());
+		auto& model = mesh.GetModel();
 		model.BindVAO();
 
 		glDrawElements(GL_TRIANGLES, model.GetIndicesCount(), GL_UNSIGNED_INT, nullptr);
 	}
+
+	GLenum lastError = glGetError();
+
+	if(lastError != GL_NO_ERROR)
+		std::cout << "[INFO/ChunkRenderer] Last GL Error: " << lastError << std::endl;
 
 	//m_chunks.clear();
 }

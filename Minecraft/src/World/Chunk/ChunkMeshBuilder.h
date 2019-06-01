@@ -19,8 +19,8 @@ public:
 private:
 
 
-	void TryAddFace(const std::array<GLfloat, 12>& blockFace, const glm::vec3& texCoords, const glm::vec3& blockPosition, const glm::vec3& blockFacing);
-	bool ShouldMakeFace(const glm::vec3& blockPosition);
+	void TryAddFace(const std::array<GLfloat, 12>& blockFace, const glm::vec3& texCoords, const glm::ivec3& blockPosition, const glm::ivec3& blockFacing, GLfloat cardinalLight);
+	bool ShouldMakeFace(const glm::ivec3& blockPosition);
 
 	ChunkSection* m_section;
 	ChunkMesh* m_mesh;

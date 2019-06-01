@@ -1,20 +1,15 @@
 #include "Model.h"
 #include <iostream>
 
-Model::Model(const Mesh& mesh)
-{
-	AddData(mesh);
-}
-
 Model::~Model()
 {
-	DeleteData();
+	Release();
 }
 
-void Model::AddData(const Mesh& mesh)
+void Model::Create(const Mesh& mesh)
 {
 	if (m_vao != 0)
-		DeleteData();
+		Release();
 
 	// Generate and bind to vertex array (vao -> Vertex Array Object)
 	glGenVertexArrays(1, &m_vao);
@@ -37,10 +32,10 @@ void Model::AddData(const Mesh& mesh)
 
 	m_buffers.push_back(ebo);
 
-	glBindVertexArray(0);
+	//glBindVertexArray(0);
 }
 
-void Model::DeleteData()
+void Model::Release()
 {
 	if (m_vao)
 		glDeleteVertexArrays(1, &m_vao);
@@ -53,6 +48,7 @@ void Model::DeleteData()
 	m_buffers.clear();
 
 	m_vboCount = 0;
+	m_indicesCount = 0;
 }
 
 void Model::BindVAO()

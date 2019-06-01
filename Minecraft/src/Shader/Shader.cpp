@@ -4,9 +4,23 @@
 #include "../Util/FileUtilities.h"
 
 Shader::Shader(const std::string& vertFile, const std::string& fragFile)
+	: m_vertFile(vertFile), m_fragFile(fragFile)
 {
-	auto vertSource = FileUtilities::GetContents("res/shaders/" + vertFile + ".vert");
-	auto fragSource = FileUtilities::GetContents("res/shaders/" + fragFile + ".frag");
+}
+
+Shader::~Shader()
+{
+	if(m_id)
+		glDeleteProgram(m_id);
+}
+
+void Shader::Create()
+{
+	if (m_id)
+		return;
+
+	auto vertSource = FileUtilities::GetContents("res/shaders/" + m_vertFile + ".vert");
+	auto fragSource = FileUtilities::GetContents("res/shaders/" + m_fragFile + ".frag");
 
 	// Compile Shader
 	auto vertShaderId = Compile(vertSource.c_str(), GL_VERTEX_SHADER);
@@ -20,11 +34,7 @@ Shader::Shader(const std::string& vertFile, const std::string& fragFile)
 		glDeleteShader(fragShaderId);
 	}
 
-}
-
-Shader::~Shader()
-{
-	glDeleteProgram(m_id);
+	GetUniforms();
 }
 
 void Shader::UseProgram()

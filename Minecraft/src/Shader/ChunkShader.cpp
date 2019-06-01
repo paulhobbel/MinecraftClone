@@ -12,5 +12,6 @@ void ChunkShader::LoadProjectionViewMatrix(const glm::mat4& matrix)
 
 void ChunkShader::GetUniforms()
 {
+	UseProgram();
 	m_projViewMatrixLocation = glGetUniformLocation(m_id, "projViewMatrix");
 }
