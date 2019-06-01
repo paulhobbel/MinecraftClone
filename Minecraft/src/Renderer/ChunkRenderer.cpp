@@ -66,6 +66,8 @@ namespace
 	constexpr GLfloat LIGHT_BOT = 0.4f;
 }
 
+Texture dirtTexture;
+
 ChunkRenderer::ChunkRenderer()
 {
 	ChunkMesh mesh;
@@ -105,12 +107,12 @@ void ChunkRenderer::Init()
 {
 	m_shader.Create();
 
+	dirtTexture.Create("res/textures/dirt.png");
+
 	for (auto& mesh : m_chunks)
 	{
 		mesh.BufferMesh();
 	}
-
-	std::cout << glGetError() << std::endl;
 }
 
 void ChunkRenderer::Add(const ChunkMesh& mesh)
@@ -138,11 +140,9 @@ void ChunkRenderer::Render(Camera& camera)
 
 	m_shader.LoadProjectionViewMatrix(camera.getProjectionViewMatrix());
 
-	Texture texture("res/textures/dirt.png");
-	texture.Bind();
+	dirtTexture.Bind();
 
-	// Bind textures
-
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	for (auto& mesh : m_chunks)
 	{
 		auto& model = mesh.GetModel();
@@ -150,7 +150,8 @@ void ChunkRenderer::Render(Camera& camera)
 
 		glDrawElements(GL_TRIANGLES, model.GetIndicesCount(), GL_UNSIGNED_INT, nullptr);
 	}
-
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	
 	GLenum lastError = glGetError();
 
 	if(lastError != GL_NO_ERROR)

@@ -6,6 +6,8 @@
 #include "Keyboard.h"
 #include "Game.h"
 
+#include "World/Entities/Player.h"
+
 Game::Game() : m_world(m_camera)
 {
 	if (!glfwInit())
@@ -46,6 +48,8 @@ Game::~Game()
 	glfwTerminate();
 }
 
+Player player;
+
 void Game::Run()
 {
 	/*int width, height;
@@ -53,9 +57,23 @@ void Game::Run()
 
 	glViewport(0, 0, width, height);*/
 
+	//Player player;
+	player.position = { 0, 1.5f, 3.5f };
+
+	m_camera.BindEntity(player);
+
+	float lastFrame = 0;
+
 	while (!m_window->IsOpen())
 	{
-		m_camera.Update(m_window);
+		float currentFrame = static_cast<float>(glfwGetTime());
+		float deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
+
+		player.HandleInput(m_window);
+		player.Update(deltaTime, m_world);
+
+		m_camera.Update();
 
 		/* Render here */
 		m_renderer.Render(m_camera);

@@ -14,72 +14,22 @@ Camera::Camera()
 	m_projViewMatrix = glm::mat4();
 }
 
+void Camera::BindEntity(const Entity& entity) noexcept
+{
+	m_entity = &entity;
+}
+
 void Camera::SetPerspective(glm::vec2 size) noexcept
 {
 	m_projectionMatrix = glm::perspective(glm::radians(60.f), size.x / size.y, .1f, 2000.f);
 }
 
-void Camera::Update(GameWindow* window) noexcept
+void Camera::Update() noexcept
 {
-	// Update camera position
-	if (Keyboard::IsPressed(GLFW_KEY_W))
-	{
-		position.x += -glm::cos(glm::radians(rotation.y + 90)) * .2f;
-		position.z += -glm::sin(glm::radians(rotation.y + 90)) * .2f;
-	}
+	position = { m_entity->position.x, m_entity->position.y + 0.6f, m_entity->position.z };
+	rotation = m_entity->rotation;
 
-	if (Keyboard::IsPressed(GLFW_KEY_S))
-	{
-		position.x += glm::cos(glm::radians(rotation.y + 90)) * .2f;
-		position.z += glm::sin(glm::radians(rotation.y + 90)) * .2f;
-	}
-
-	if (Keyboard::IsPressed(GLFW_KEY_A))
-	{
-		position.x += -glm::cos(glm::radians(rotation.y)) * .2f;
-		position.z += -glm::sin(glm::radians(rotation.y)) * .2f;
-	}
-
-	if (Keyboard::IsPressed(GLFW_KEY_D))
-	{
-		position.x += glm::cos(glm::radians(rotation.y)) * .2f;
-		position.z += glm::sin(glm::radians(rotation.y)) * .2f;
-	}
-
-	if (Keyboard::IsPressed(GLFW_KEY_SPACE))
-	{
-		position.y += .2f;
-	}
-
-	if (Keyboard::IsPressed(GLFW_KEY_LEFT_SHIFT))
-	{
-		position.y -= .2f;
-	}
-
-	static auto lastMousePosition = Mouse::GetPosition(window);
-
-	if (window->HasFocus())
-	{
-		auto deltaPos = Mouse::GetPosition(window) - lastMousePosition;
-
-		rotation.y += deltaPos.x * 0.05f;
-		rotation.x += deltaPos.y * 0.05f;
-
-		if (rotation.x > 90.f) rotation.x = 90.f;
-		else if (rotation.x < -90.f) rotation.x = -90.f;
-
-		if (rotation.y > 360) rotation.y = 0;
-		else if (rotation.y < 0) rotation.y = 360;
-
-		//std::cout << "Rotation: " << glm::to_string(rotation) << ", deltaPos: " << glm::to_string(deltaPos) << std::endl;
-
-		auto cx = static_cast<int>(window->GetSize().x / 2);
-		auto cy = static_cast<int>(window->GetSize().y / 2);
-
-		Mouse::SetPosition({ cx, cy }, window);
-
-		lastMousePosition = Mouse::GetPosition(window);
-	}
+	//std::cout << "position: " << glm::to_string(position) << ", rotation: " << glm::to_string(rotation) << std::endl;
 
 	m_viewMatrix = glm::mat4(1.f);
 

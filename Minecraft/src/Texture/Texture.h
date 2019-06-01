@@ -7,7 +7,7 @@ class Texture
 {
 public:
 	Texture() = default;
-	Texture(const std::string& file);
+	void Create(const std::string& file);
 
 	~Texture();
 
