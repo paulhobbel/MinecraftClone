@@ -10,24 +10,42 @@ ChunkProvider::~ChunkProvider()
 {
 }
 
-Chunk& ChunkProvider::GetChunk(int x, int y)
+std::unordered_map<glm::ivec2, Chunk>& ChunkProvider::GetChunks()
 {
-	Vec2 position(x, y);
+	return m_chunks;
+}
 
-	if (!ChunkExists(x, y)) {
-		Chunk chunk{ *m_world, {x, y} };
+Chunk& ChunkProvider::GetChunk(int x, int z)
+{
+	glm::ivec2 position(x, z);
+
+	if (!ChunkExists(x, z)) {
+		Chunk chunk{ *m_world, {x, z} };
 		m_chunks.emplace(position, std::move(chunk));
 	}
 
 	return m_chunks[position];
 }
 
-bool ChunkProvider::ChunkExists(int x, int y) const
+bool ChunkProvider::MakeMesh(int x, int z, const Camera& camera)
 {
-	return m_chunks.find({ x, y }) != m_chunks.end();
+	for (int nx = -1; nx <= 1; nx++)
+	{
+		for (int nz = -1; nz <= 1; nz++)
+		{
+			LoadChunk(x + nx, z + nz);
+		}
+	}
+
+	return GetChunk(x, z).MakeMesh();
 }
 
-void ChunkProvider::LoadChunk(int x, int y)
+bool ChunkProvider::ChunkExists(int x, int z) const
 {
-	GetChunk(x, y).Load(*m_generator);
+	return m_chunks.find({ x, z }) != m_chunks.end();
+}
+
+void ChunkProvider::LoadChunk(int x, int z)
+{
+	GetChunk(x, z).Load(*m_generator);
 }

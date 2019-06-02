@@ -7,6 +7,7 @@
 
 class Camera;
 class ChunkMesh;
+struct RenderInfo;
 
 class ChunkRenderer : public Initializable
 {
@@ -15,10 +16,10 @@ public:
 
 	void Init() override;
 
-	void Add(const ChunkMesh& mesh);
+	void AddMesh(const ChunkMesh& mesh);
 	void Render(Camera& camera);
 private:
-	std::vector<ChunkMesh> m_chunks;
+	std::vector<const RenderInfo*> m_chunks;
 
 	ChunkShader m_shader;
 };

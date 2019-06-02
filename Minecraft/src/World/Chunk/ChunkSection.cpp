@@ -1,8 +1,14 @@
 #include "ChunkSection.h"
 #include "../World.h"
 
+ChunkSection::ChunkSection(const glm::ivec3& position, World& world) : m_position(position), m_world(&world)
+{
+}
+
 Block ChunkSection::GetBlock(int x, int y, int z) const noexcept
 {
+	if (OutOfBounds(x) || OutOfBounds(y) || OutOfBounds(z))
+		return BlockId::Air;
 	// TODO: Check if out of bounds!
 	return m_blocks[GetBlockIndex(x, y, z)];
 }
@@ -13,6 +19,11 @@ void ChunkSection::SetBlock(int x, int y, int z, Block block)
 	m_blocks[GetBlockIndex(x, y, z)] = block;
 }
 
+bool ChunkSection::OutOfBounds(int value)
+{
+	return value >= CHUNK_SIZE || value < 0;
+}
+
 ChunkSection& ChunkSection::GetNeighbour(int x, int z)
 {
 	return m_world->GetChunkProvider()
@@ -20,14 +31,30 @@ ChunkSection& ChunkSection::GetNeighbour(int x, int z)
 		.GetSection(m_position.y);
 }
 
-const glm::vec3 ChunkSection::GetPosition() const
+const glm::ivec3 ChunkSection::GetPosition() const
 {
 	return m_position;
+}
+
+bool ChunkSection::HasBuffered()
+{
+	return m_mesh.HasBuffered();
+}
+
+void ChunkSection::BufferMesh()
+{
+	m_mesh.BufferMesh();
+}
+
+bool ChunkSection::HasMesh()
+{
+	return m_hasMesh;
 }
 
 void ChunkSection::MakeMesh()
 {
 	ChunkMeshBuilder(*this, m_mesh).Build();
+	m_hasMesh = true;
 }
 
 const ChunkMesh& ChunkSection::GetMesh() const
@@ -37,5 +64,5 @@ const ChunkMesh& ChunkSection::GetMesh() const
 
 int ChunkSection::GetBlockIndex(int x, int y, int z)
 {
-	return y * CHUNK_SIZE + z * CHUNK_SIZE + x;
+	return y * CHUNK_AREA + z * CHUNK_SIZE + x;
 }

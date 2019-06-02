@@ -2,9 +2,10 @@
 
 #include <vector>
 
-#include "../../Math/Vec2.h"
 #include "../Block/Block.h"
 #include "ChunkSection.h"
+
+#include <glm/vec2.hpp>
 
 class World;
 class MainRenderer;
@@ -14,18 +15,18 @@ class Chunk
 {
 public:
 	Chunk() = default;
-	Chunk(World& world, const Vec2& position);
+	Chunk(World& world, const glm::ivec2& position);
 
 	Block GetBlock(int x, int y, int z) const noexcept;
 	void SetBlock(int x, int y, int z, Block block);
 	bool IsLoaded() const noexcept;
 
 	ChunkSection& GetSection(int index);
-	Vec2& GetPosition();
+	glm::ivec2& GetPosition();
 
 	void Load(TerrainGenerator& generator);
 
-	void MakeMesh();
+	bool MakeMesh();
 	
 	void Render(MainRenderer& renderer);
 
@@ -33,7 +34,7 @@ private:
 	bool m_loaded = false;
 
 	std::vector<ChunkSection> m_sections;
-	Vec2 m_position;
+	glm::ivec2 m_position;
 
 	World* m_world;
 };

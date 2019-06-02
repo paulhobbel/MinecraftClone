@@ -26,6 +26,13 @@ void ChunkMesh::AddFace(const std::array<GLfloat, 12>& blockFace, const std::arr
 
 	// TexCoord | LightValue
 	m_indiceIndex += 4;
+
+	m_buffered = false;
+}
+
+bool ChunkMesh::HasBuffered()
+{
+	return m_buffered;
 }
 
 void ChunkMesh::BufferMesh()
@@ -42,9 +49,11 @@ void ChunkMesh::BufferMesh()
 	m_mesh.texCoords.shrink_to_fit();
 
 	m_indiceIndex = 0;
+
+	m_buffered = true;
 }
 
-Model& ChunkMesh::GetModel()
+const Model& ChunkMesh::GetModel() const
 {
 	return m_model;
 }

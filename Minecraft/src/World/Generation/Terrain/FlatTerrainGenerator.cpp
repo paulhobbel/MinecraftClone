@@ -4,9 +4,9 @@
 
 void FlatTerrainGenerator::GenerateTerrain(Chunk& chunk)
 {
-	for (int x = 0; x < 16; x++)
+	for (int x = 0; x < CHUNK_SIZE; x++)
 	{
-		for (int z = 0; z < 16; z++)
+		for (int z = 0; z < CHUNK_SIZE; z++)
 		{
 			chunk.SetBlock(x, 0, z, BlockId::Stone);
 			chunk.SetBlock(x, 1, z, BlockId::Dirt);

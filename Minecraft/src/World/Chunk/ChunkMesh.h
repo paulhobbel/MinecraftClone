@@ -19,13 +19,16 @@ public:
 		const glm::vec3 blockPosition,
 		const GLfloat cardinalLight);
 
+	bool HasBuffered();
 	void BufferMesh();
 
-	Model& GetModel();
+	const Model& GetModel() const;
 
 private:
 	Mesh m_mesh;
 	Model m_model;
+
+	bool m_buffered = false;
 
 	std::vector<GLfloat> m_lights;
 	unsigned int m_indiceIndex = 0;

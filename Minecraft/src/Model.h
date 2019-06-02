@@ -5,6 +5,12 @@
 
 #include "Mesh.h"
 
+struct RenderInfo
+{
+	GLuint vao = 0;
+	GLuint indicesCount = 0;
+};
+
 class Model
 {
 public:
@@ -17,11 +23,14 @@ public:
 	void AddVBO(int dimensions, const std::vector<GLfloat>& data);
 
 	void BindVAO();
-	int GetIndicesCount();
+	int GetIndicesCount() const;
+
+	const RenderInfo& GetRenderInfo() const;
 
 private:
-	GLuint m_vao = 0;
-	GLuint m_indicesCount = 0;
+	/*GLuint m_vao = 0;
+	GLuint m_indicesCount = 0;*/
+	RenderInfo m_renderInfo;
 
 	int m_vboCount = 0;
 

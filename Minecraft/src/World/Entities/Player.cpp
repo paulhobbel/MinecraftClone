@@ -14,8 +14,13 @@ void Player::HandleInput(GameWindow* window)
 {
 	if (Keyboard::IsPressed(GLFW_KEY_W))
 	{
-		m_acceleration.x += -glm::cos(glm::radians(rotation.y + 90)) * .2f;
-		m_acceleration.z += -glm::sin(glm::radians(rotation.y + 90)) * .2f;
+		float speed = .2f;
+		if (Keyboard::IsPressed(GLFW_KEY_LEFT_CONTROL))
+		{
+			speed *= 3;
+		}
+		m_acceleration.x += -glm::cos(glm::radians(rotation.y + 90)) * speed;
+		m_acceleration.z += -glm::sin(glm::radians(rotation.y + 90)) * speed;
 	}
 
 	if (Keyboard::IsPressed(GLFW_KEY_S))

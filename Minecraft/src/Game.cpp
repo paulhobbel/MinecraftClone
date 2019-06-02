@@ -62,7 +62,7 @@ void Game::Run()
 
 	m_camera.BindEntity(player);
 
-	float lastFrame = 0;
+	float lastFrame = static_cast<float>(glfwGetTime());
 
 	while (!m_window->IsOpen())
 	{
@@ -75,6 +75,7 @@ void Game::Run()
 
 		m_camera.Update();
 
+		m_world.Render(m_renderer, m_camera);
 		/* Render here */
 		m_renderer.Render(m_camera);
 

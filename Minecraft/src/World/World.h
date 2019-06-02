@@ -8,6 +8,7 @@
 #include "Chunk/ChunkProvider.h"
 
 struct Block;
+class MainRenderer;
 class Camera;
 
 class World
@@ -21,6 +22,8 @@ public:
 
 	void Update(const Camera& camera);
 	void UpdateChunk(int x, int y, int z);
+
+	void Render(MainRenderer& renderer, const Camera& camera);
 
 	ChunkProvider& GetChunkProvider();
 

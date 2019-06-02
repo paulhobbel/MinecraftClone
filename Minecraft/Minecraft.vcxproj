@@ -148,7 +148,6 @@
     <ClCompile Include="src\World\Entities\Player.cpp" />
     <ClCompile Include="src\World\Generation\Terrain\FlatTerrainGenerator.cpp" />
     <ClCompile Include="src\World\World.cpp" />
-    <ClCompile Include="src\Math\Vec2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="deps\include\stb_image.h" />
@@ -180,7 +179,6 @@
     <ClInclude Include="src\World\Generation\Terrain\FlatTerrainGenerator.h" />
     <ClInclude Include="src\World\Generation\Terrain\TerrainGenerator.h" />
     <ClInclude Include="src\World\World.h" />
-    <ClInclude Include="src\Math\Vec2.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\dirt.png" />

@@ -1,6 +1,10 @@
 #pragma once
 
-enum class BlockId
+#include <cstdint>
+
+using Block_t = uint8_t;
+
+enum class BlockId : Block_t
 {
 	Air		= 0,
 	Grass	= 1,

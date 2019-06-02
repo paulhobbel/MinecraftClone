@@ -8,7 +8,7 @@ void Keyboard::UpdateKey(int key, int state)
 {
 	m_keys[key] = state;
 
-	std::cout << "[INFO/Keyboard] Updated key " << key << " to state " << state << std::endl;
+	//std::cout << "[INFO/Keyboard] Updated key " << key << " to state " << state << std::endl;
 }
 
 bool Keyboard::IsPressed(int key)
