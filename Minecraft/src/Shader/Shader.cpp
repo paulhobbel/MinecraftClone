@@ -19,8 +19,8 @@ void Shader::Create()
 	if (m_id)
 		return;
 
-	auto vertSource = FileUtilities::GetContents("res/shaders/" + m_vertFile + ".vert");
-	auto fragSource = FileUtilities::GetContents("res/shaders/" + m_fragFile + ".frag");
+	auto vertSource = FileUtilities::GetContentsAsString("res/shaders/" + m_vertFile + ".vert");
+	auto fragSource = FileUtilities::GetContentsAsString("res/shaders/" + m_fragFile + ".frag");
 
 	// Compile Shader
 	auto vertShaderId = Compile(vertSource.c_str(), GL_VERTEX_SHADER);
