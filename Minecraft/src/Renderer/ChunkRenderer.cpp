@@ -43,6 +43,9 @@ void ChunkRenderer::Render(Camera& camera)
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	for (auto info : m_chunks)
 	{
+		if (info->vao == 0)
+			continue;
+
 		glBindVertexArray(info->vao);
 		glDrawElements(GL_TRIANGLES, info->indicesCount, GL_UNSIGNED_INT, nullptr);
 	}

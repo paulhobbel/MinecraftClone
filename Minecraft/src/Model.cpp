@@ -8,6 +8,12 @@ Model::~Model()
 
 void Model::Create(const Mesh& mesh)
 {
+	if (mesh.indices.size() == 0 && mesh.vertices.size() == 0)
+	{
+		std::cout << "[WARN/Model] Leak detected! Tried to create empty VAO. Unexpected things can happen now!" << std::endl;
+		return;
+	}
+
 	if (m_renderInfo.vao != 0)
 		Release();
 
@@ -15,7 +21,7 @@ void Model::Create(const Mesh& mesh)
 	glGenVertexArrays(1, &m_renderInfo.vao);
 	glBindVertexArray(m_renderInfo.vao);
 
-	std::cout << "[DEBUG/Model] Generated VAO " << m_renderInfo.vao << std::endl;
+	//std::cout << "[DEBUG/Model] Generated VAO " << m_renderInfo.vao << std::endl;
 
 	// Generate the vbos
 	AddVBO(3, mesh.vertices);
@@ -42,7 +48,7 @@ void Model::Release()
 	if (m_renderInfo.vao)
 	{
 		glDeleteVertexArrays(1, &m_renderInfo.vao);
-		std::cout << "[DEBUG/Model] Releasing VAO " << m_renderInfo.vao << std::endl;
+		std::cout << "[WARN/Model] Releasing VAO " << m_renderInfo.vao << std::endl;
 	}
 
 	if (m_buffers.size() > 0)

@@ -37,7 +37,7 @@ bool ChunkProvider::MakeMesh(int x, int z, const Camera& camera)
 		}
 	}
 
-	return GetChunk(x, z).MakeMesh();
+	return GetChunk(x, z).MakeMesh(camera);
 }
 
 bool ChunkProvider::ChunkExists(int x, int z) const

@@ -137,7 +137,9 @@
     <ClCompile Include="src\Shader\ChunkShader.cpp" />
     <ClCompile Include="src\Shader\Shader.cpp" />
     <ClCompile Include="src\Texture\Texture.cpp" />
+    <ClCompile Include="src\Util\AABB.cpp" />
     <ClCompile Include="src\Util\FileUtilities.cpp" />
+    <ClCompile Include="src\Util\ViewFrustum.cpp" />
     <ClCompile Include="src\World\Chunk\ChunkMesh.cpp" />
     <ClCompile Include="src\Renderer\MainRenderer.cpp" />
     <ClCompile Include="src\Renderer\ChunkRenderer.cpp" />
@@ -160,6 +162,8 @@
     <ClInclude Include="src\Model\BlockPartFace.h" />
     <ClInclude Include="src\Model\ModelBlock.h" />
     <ClInclude Include="src\Model\ModelProvider.h" />
+    <ClInclude Include="src\Util\AABB.h" />
+    <ClInclude Include="src\Util\ViewFrustum.h" />
     <ClInclude Include="src\World\Entities\Player.h" />
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\GameWindow.h" />

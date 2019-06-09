@@ -27,7 +27,12 @@ void ChunkMesh::AddFace(const std::array<GLfloat, 12>& blockFace, const std::arr
 	// TexCoord | LightValue
 	m_indiceIndex += 4;
 
-	m_buffered = false;
+	//m_buffered = false;
+}
+
+void ChunkMesh::SetHasBuffered(bool flag)
+{
+	m_buffered = flag;
 }
 
 bool ChunkMesh::HasBuffered()

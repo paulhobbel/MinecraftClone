@@ -2,6 +2,7 @@
 #include "Chunk.h"
 #include "../../Renderer/MainRenderer.h"
 #include "../Generation/Terrain/TerrainGenerator.h"
+#include "../../Camera.h"
 
 Chunk::Chunk(World& world, const glm::ivec2& position)
 	: m_world(&world), m_position(position)
@@ -42,11 +43,11 @@ void Chunk::Load(TerrainGenerator& generator)
 	m_loaded = true;
 }
 
-bool Chunk::MakeMesh()
+bool Chunk::MakeMesh(const Camera& camera)
 {
 	for (auto& section : m_sections)
 	{
-		if (!section.HasMesh())
+		if (!section.HasMesh() && camera.getFrustum().IsBoxInFrustum(section.m_aabb))
 		{
 			// Check if mesh wasn't already generated
 			// Check if section is even visible
@@ -57,7 +58,7 @@ bool Chunk::MakeMesh()
 	return false;
 }
 
-void Chunk::Render(MainRenderer& renderer)
+void Chunk::Render(MainRenderer& renderer, const Camera& camera)
 {
 	for (auto& section : m_sections)
 	{
@@ -69,7 +70,8 @@ void Chunk::Render(MainRenderer& renderer)
 			section.BufferMesh();
 		}
 
-		renderer.RenderChunk(section);
+		if(camera.getFrustum().IsBoxInFrustum(section.m_aabb))
+			renderer.RenderChunk(section);
 		//renderer.Add(section.GetMesh());
 	}
 }

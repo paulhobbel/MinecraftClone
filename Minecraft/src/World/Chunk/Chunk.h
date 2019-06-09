@@ -1,13 +1,13 @@
 #pragma once
 
 #include <vector>
+#include <glm/vec2.hpp>
 
 #include "../Block/Block.h"
 #include "ChunkSection.h"
 
-#include <glm/vec2.hpp>
-
 class World;
+class Camera;
 class MainRenderer;
 class TerrainGenerator;
 
@@ -26,9 +26,9 @@ public:
 
 	void Load(TerrainGenerator& generator);
 
-	bool MakeMesh();
+	bool MakeMesh(const Camera& camera);
 	
-	void Render(MainRenderer& renderer);
+	void Render(MainRenderer& renderer, const Camera& camera);
 
 private:
 	bool m_loaded = false;
