@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "ChunkMesh.h"
 
 #include "../../Constants.h"
@@ -37,6 +39,12 @@ bool ChunkMesh::HasBuffered()
 
 void ChunkMesh::BufferMesh()
 {
+	if (m_mesh.indices.size() == 0)
+	{
+		//std::cout << "[WARN/ChunkMesh] Tried to buffer an empty mesh, why..." << std::endl;
+		return;
+	}
+
 	m_model.Create(m_mesh);
 	m_model.AddVBO(1, m_lights);
 

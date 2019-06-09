@@ -8,20 +8,20 @@ Model::~Model()
 
 void Model::Create(const Mesh& mesh)
 {
-	if (m_renderInfo.vao != 0)
+	if (m_vao != 0)
 		Release();
 
 	// Generate and bind to vertex array (vao -> Vertex Array Object)
-	glGenVertexArrays(1, &m_renderInfo.vao);
-	glBindVertexArray(m_renderInfo.vao);
+	glGenVertexArrays(1, &m_vao);
+	glBindVertexArray(m_vao);
 
-	std::cout << "[DEBUG/Model] Generated VAO " << m_renderInfo.vao << std::endl;
+	std::cout << "[DEBUG/Model] Generated VAO " << m_vao << std::endl;
 
 	// Generate the vbos
 	AddVBO(3, mesh.vertices);
 	AddVBO(2, mesh.texCoords);
 
-	m_renderInfo.indicesCount = static_cast<GLuint>(mesh.indices.size());
+	m_indicesCount = static_cast<GLuint>(mesh.indices.size());
 
 	// Generate the ebo
 	GLuint ebo;
@@ -39,10 +39,10 @@ void Model::Create(const Mesh& mesh)
 
 void Model::Release()
 {
-	if (m_renderInfo.vao)
+	if (m_vao)
 	{
-		glDeleteVertexArrays(1, &m_renderInfo.vao);
-		std::cout << "[DEBUG/Model] Releasing VAO " << m_renderInfo.vao << std::endl;
+		glDeleteVertexArrays(1, &m_vao);
+		std::cout << "[DEBUG/Model] Releasing VAO " << m_vao << std::endl;
 	}
 
 	if (m_buffers.size() > 0)
@@ -55,23 +55,18 @@ void Model::Release()
 	m_vboCount = 0;
 
 	// Reset render info
-	m_renderInfo.vao = 0;
-	m_renderInfo.indicesCount = 0;
+	m_vao = 0;
+	m_indicesCount = 0;
 }
 
-void Model::BindVAO()
+void Model::BindVAO() const
 {
-	glBindVertexArray(m_renderInfo.vao);
+	glBindVertexArray(m_vao);
 }
 
-const RenderInfo& Model::GetRenderInfo() const
+const int Model::GetIndicesCount() const
 {
-	return m_renderInfo;
-}
-
-int Model::GetIndicesCount() const
-{
-	return m_renderInfo.indicesCount;
+	return m_indicesCount;
 }
 
 void Model::AddVBO(int dimensions, const std::vector<GLfloat>& data)

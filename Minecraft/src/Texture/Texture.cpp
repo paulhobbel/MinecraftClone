@@ -1,14 +1,23 @@
-#include "Texture.h"
+#include <iostream>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+
+#include "Texture.h"
+
 
 void Texture::Create(const std::string& file)
 {
 	// Load image file
 	stbi_set_flip_vertically_on_load(true);
 	int width, height, bpp;
-	auto data = stbi_load(file.c_str(), &width, &height, &bpp, 4);
+	auto data = stbi_load(file.c_str(), &width, &height, &bpp, STBI_rgb_alpha);
+
+	if (data == 0)
+	{
+		std::cout << "[ERROR/Texture] Failed to load [ " << file << " ], are the resources there?" << std::endl;
+		return;
+	}
 
 	glGenTextures(1, &m_id);
 	glBindTexture(GL_TEXTURE_2D, m_id);

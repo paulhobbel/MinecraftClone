@@ -86,9 +86,11 @@ void GameWindow::SetInputCallback(std::function<void(int key, int scanCode, int 
 
 void GameWindow::SetGLContext()
 {
+	std::cout << "[INFO/GameWindow] Initializing OpenGL" << std::endl;
 	glfwMakeContextCurrent(m_handle);
-	gladLoadGL();
-	//gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+	//gladLoadGL();
+	gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+	std::cout << "[INFO/GameWindow] OpenGL Loaded, using: " << glGetString(GL_VERSION)  << std::endl;
 }
 
 void GameWindow::SwapBuffers()

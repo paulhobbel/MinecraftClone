@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdexcept>
 
 #include "Shader.h"
 #include "../Util/FileUtilities.h"
@@ -19,22 +20,29 @@ void Shader::Create()
 	if (m_id)
 		return;
 
-	auto vertSource = FileUtilities::GetContentsAsString("res/shaders/" + m_vertFile + ".vert");
-	auto fragSource = FileUtilities::GetContentsAsString("res/shaders/" + m_fragFile + ".frag");
-
-	// Compile Shader
-	auto vertShaderId = Compile(vertSource.c_str(), GL_VERTEX_SHADER);
-	auto fragShaderId = Compile(fragSource.c_str(), GL_FRAGMENT_SHADER);
-
-	if (vertShaderId && fragShaderId)
+	try
 	{
-		m_id = Link(vertShaderId, fragShaderId);
+		auto vertSource = FileUtilities::GetContentsAsString("res/shaders/" + m_vertFile + ".vert");
+		auto fragSource = FileUtilities::GetContentsAsString("res/shaders/" + m_fragFile + ".frag");
 
-		glDeleteShader(vertShaderId);
-		glDeleteShader(fragShaderId);
+		// Compile Shader
+		auto vertShaderId = Compile(vertSource.c_str(), GL_VERTEX_SHADER);
+		auto fragShaderId = Compile(fragSource.c_str(), GL_FRAGMENT_SHADER);
+
+		if (vertShaderId && fragShaderId)
+		{
+			m_id = Link(vertShaderId, fragShaderId);
+
+			glDeleteShader(vertShaderId);
+			glDeleteShader(fragShaderId);
+		}
+
+		GetUniforms();
 	}
-
-	GetUniforms();
+	catch (std::runtime_error e)
+	{
+		std::cout << "[ERROR/Shader] Failed to create shader, reason: " << e.what() << std::endl;
+	}
 }
 
 void Shader::UseProgram()

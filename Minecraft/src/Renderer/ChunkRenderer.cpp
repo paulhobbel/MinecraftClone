@@ -26,7 +26,7 @@ void ChunkRenderer::Init()
 
 void ChunkRenderer::AddMesh(const ChunkMesh& mesh)
 {
-	m_chunks.push_back(&mesh.GetModel().GetRenderInfo());
+	m_chunks.push_back(&mesh);
 }
 
 void ChunkRenderer::Render(Camera& camera)
@@ -41,17 +41,24 @@ void ChunkRenderer::Render(Camera& camera)
 	dirtTexture.Bind();
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	for (auto info : m_chunks)
+	for (auto& mesh : m_chunks)
 	{
-		glBindVertexArray(info->vao);
-		glDrawElements(GL_TRIANGLES, info->indicesCount, GL_UNSIGNED_INT, nullptr);
+		if (mesh->GetModel().GetIndicesCount() == 0)
+		{
+			//std::cout << "[WARN/ChunkRenderer] Tried rendering a chunk section with 0 indices, did something break?" << std::endl;
+			continue;
+		}
+
+		mesh->GetModel().BindVAO();
+		//glBindVertexArray(info->vao);
+		glDrawElements(GL_TRIANGLES, mesh->GetModel().GetIndicesCount(), GL_UNSIGNED_INT, nullptr);
 	}
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	GLenum lastError = glGetError();
 
-	if (lastError != GL_NO_ERROR)
-		std::cout << "[ERROR/ChunkRenderer] GL Error: " << lastError << std::endl;
+	//if (lastError != GL_NO_ERROR)
+		//std::cout << "[ERROR/ChunkRenderer] GL Error: " << lastError << std::endl;
 
 	m_chunks.clear();
 }

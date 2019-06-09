@@ -19,7 +19,7 @@ public:
 	void AddMesh(const ChunkMesh& mesh);
 	void Render(Camera& camera);
 private:
-	std::vector<const RenderInfo*> m_chunks;
+	std::vector<const ChunkMesh*> m_chunks;
 
 	ChunkShader m_shader;
 };

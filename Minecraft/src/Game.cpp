@@ -10,6 +10,8 @@
 
 Game::Game() : m_world(m_camera)
 {
+	std::cout << "[INFO/Game] Initializing game..." << std::endl;
+
 	if (!glfwInit())
 		exit(EXIT_FAILURE);
 	
@@ -41,6 +43,8 @@ Game::Game() : m_world(m_camera)
 	m_window->SetInputCallback([this](int key, int scanCode, int action, int mods) {
 		Keyboard::UpdateKey(key, action);
 	});
+
+	std::cout << "[INFO/Game] Done Initializing" << std::endl;
 }
 
 Game::~Game()
@@ -87,6 +91,8 @@ void Game::Run()
 		/* Poll for and process events */
 		glfwPollEvents();
 	}
+
+	std::cout << "[INFO/Game] Was fun having you here, see you next time." << std::endl;
 
 	glfwTerminate();
 }
