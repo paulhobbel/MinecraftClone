@@ -35,6 +35,8 @@ private:
 
 	std::atomic<bool> m_running{ true };
 	std::vector<std::thread> m_chunkThreads;
+
+	std::thread m_TestThread;
 	
 	std::mutex m_mainMutex;
 	std::mutex m_geneMutex;

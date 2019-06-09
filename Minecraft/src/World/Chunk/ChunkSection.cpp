@@ -1,8 +1,10 @@
 #include "ChunkSection.h"
 #include "../World.h"
 
-ChunkSection::ChunkSection(const glm::ivec3& position, World& world) : m_position(position), m_world(&world)
+ChunkSection::ChunkSection(const glm::ivec3& position, World& world)
+	: m_position(position), m_world(&world), m_aabb({ CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE })
 {
+	m_aabb.Update({ position.x * CHUNK_SIZE, position.y * CHUNK_SIZE, position.z * CHUNK_SIZE });
 }
 
 Block ChunkSection::GetBlock(int x, int y, int z) const noexcept
@@ -54,6 +56,7 @@ bool ChunkSection::HasMesh()
 void ChunkSection::MakeMesh()
 {
 	ChunkMeshBuilder(*this, m_mesh).Build();
+	m_mesh.SetHasBuffered(false);
 	m_hasMesh = true;
 }
 

@@ -141,8 +141,8 @@ bool ChunkMeshBuilder::ShouldMakeFace(const glm::ivec3& blockPosition, const Blo
 	if (blockAdj == BlockId::Air)
 		return true;
 
-	if (blockAdj != block)
-		return true;
+	//if (blockAdj != block)
+	//	return true;
 
 	// TODO: Add more checks
 

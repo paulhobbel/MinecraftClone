@@ -41,6 +41,8 @@ void Camera::Update() noexcept
 	m_viewMatrix = glm::translate(m_viewMatrix, -position);
 
 	m_projViewMatrix = m_projectionMatrix * m_viewMatrix;
+
+	m_frustum.Update(m_projViewMatrix);
 }
 
 glm::mat4& Camera::getProjectionMatrix()
@@ -56,4 +58,9 @@ glm::mat4& Camera::getViewMatrix()
 glm::mat4& Camera::getProjectionViewMatrix()
 {
 	return m_projViewMatrix;
+}
+
+const ViewFrustum& Camera::getFrustum() const noexcept
+{
+	return m_frustum;
 }

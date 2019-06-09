@@ -18,6 +18,8 @@ World::World(const Camera& camera) : m_chunkProvider(*this)
 				LoadChunks(camera);
 			});
 	}
+
+	//m_TestThread = std::thread([&]() { LoadChunks(camera); });
 }
 
 World::~World()
@@ -44,9 +46,29 @@ void World::Render(MainRenderer& renderer, const Camera& camera)
 		Chunk& chunk = iterator->second;
 		//std::cout << "[DEBUG/World] Rendering chunk:" << glm::to_string(chunk.GetPosition()) << std::endl;
 
-		chunk.Render(renderer);
+		int cameraX = camera.position.x;
+		int cameraZ = camera.position.z;
 
-		iterator++;
+		int minX = (cameraX / CHUNK_SIZE) - 12;
+		int minZ = (cameraZ / CHUNK_SIZE) - 12;
+		int maxX = (cameraX / CHUNK_SIZE) + 12;
+		int maxZ = (cameraZ / CHUNK_SIZE) + 12;
+
+		auto location = chunk.GetPosition();
+
+		if (minX > location.x ||
+			minZ > location.y ||
+			maxZ < location.y ||
+			maxX < location.x)
+		{
+			iterator = chunks.erase(iterator);
+			continue;
+		}
+		else
+		{
+			chunk.Render(renderer, camera);
+			iterator++;
+		}
 		//renderer.RenderChunk(chunk);
 	}
 }
@@ -67,7 +89,7 @@ void World::LoadChunks(const Camera& camera)
 
 		for (int i = 0; i <= loadDistance; i++)
 		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
 			//int minX = std::max(cameraX - i, 0);
 			//int minZ = std::max(cameraZ - i, 0);
@@ -82,7 +104,13 @@ void World::LoadChunks(const Camera& camera)
 				{
 					std::unique_lock<std::mutex> lock(m_mainMutex);
 					isMeshMade = m_chunkProvider.MakeMesh(x, z, camera);
+
+					//if (isMeshMade)
+					//	break;
 				}
+
+				//if (isMeshMade)
+				//	break;
 			}
 
 			if (isMeshMade)
@@ -92,7 +120,7 @@ void World::LoadChunks(const Camera& camera)
 		if (!isMeshMade)
 			loadDistance++;
 
-		if (loadDistance > 4)
+		if (loadDistance > 12)
 			loadDistance = 2;
 	}
 }

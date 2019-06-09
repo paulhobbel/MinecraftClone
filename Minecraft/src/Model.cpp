@@ -15,7 +15,7 @@ void Model::Create(const Mesh& mesh)
 	glGenVertexArrays(1, &m_vao);
 	glBindVertexArray(m_vao);
 
-	std::cout << "[DEBUG/Model] Generated VAO " << m_vao << std::endl;
+	//std::cout << "[DEBUG/Model] Generated VAO " << m_renderInfo.vao << std::endl;
 
 	// Generate the vbos
 	AddVBO(3, mesh.vertices);
