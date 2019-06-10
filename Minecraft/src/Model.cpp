@@ -42,7 +42,7 @@ void Model::Release()
 	if (m_vao)
 	{
 		glDeleteVertexArrays(1, &m_vao);
-		std::cout << "[DEBUG/Model] Releasing VAO " << m_vao << std::endl;
+		std::cout << "[DEBUG/Model] Releasing VAO " << m_vao << ", prevented an internal memory leak!" << std::endl;
 	}
 
 	if (m_buffers.size() > 0)

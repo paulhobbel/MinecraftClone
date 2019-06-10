@@ -31,6 +31,8 @@ public:
 	void Render(MainRenderer& renderer, const Camera& camera);
 
 private:
+	bool OutOfBounds(int x, int y, int z) const noexcept;
+
 	bool m_loaded = false;
 
 	std::vector<ChunkSection> m_sections;

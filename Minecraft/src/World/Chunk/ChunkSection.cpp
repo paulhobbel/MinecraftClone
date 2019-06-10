@@ -1,5 +1,6 @@
 #include "ChunkSection.h"
 #include "../World.h"
+#include "../../Util/PositionUtilities.h"
 
 ChunkSection::ChunkSection(const glm::ivec3& position, World& world)
 	: m_position(position), m_world(&world), m_aabb({ CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE })
@@ -10,14 +11,24 @@ ChunkSection::ChunkSection(const glm::ivec3& position, World& world)
 Block ChunkSection::GetBlock(int x, int y, int z) const noexcept
 {
 	if (OutOfBounds(x) || OutOfBounds(y) || OutOfBounds(z))
-		return BlockId::Air;
-	// TODO: Check if out of bounds!
+	{
+		auto worldBlockPos = PositionUtilities::SectionToWorldBlockPosition(m_position, x, y, z);
+
+		return m_world->GetBlock(worldBlockPos.x, worldBlockPos.y, worldBlockPos.z);
+	}
+
 	return m_blocks[GetBlockIndex(x, y, z)];
 }
 
 void ChunkSection::SetBlock(int x, int y, int z, Block block)
 {
-	// TODO: Check if out of bounds!
+	if (OutOfBounds(x) || OutOfBounds(y) || OutOfBounds(z))
+	{
+		auto worldBlockPos = PositionUtilities::SectionToWorldBlockPosition(m_position, x, y, z);
+
+		m_world->SetBlock(worldBlockPos.x, worldBlockPos.y, worldBlockPos.z, block);
+	}
+
 	m_blocks[GetBlockIndex(x, y, z)] = block;
 }
 

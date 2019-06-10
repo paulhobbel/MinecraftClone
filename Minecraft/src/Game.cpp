@@ -29,13 +29,6 @@ Game::Game() : m_world(m_camera)
 	// Initialize everything that needs opengl
 	m_renderer.Init();
 
-	//m_camera.position.x = -5;
-	m_camera.position.y = 1.5;
-	m_camera.position.z = 3.5;
-	//m_camera.rotation.y = 0;
-	//m_camera.rotation.x = 5;
-	//m_camera.rotation.z = 45;
-
 	m_window->SetResizeCallback([this](glm::vec2 windowSize) {
 		m_camera.SetPerspective(windowSize);
 	});
@@ -62,7 +55,9 @@ void Game::Run()
 	glViewport(0, 0, width, height);*/
 
 	//Player player;
-	player.position = { 0, 1.5f, 3.5f };
+
+	player.position = { 0.f, 6.5f, 0.f };
+	player.rotation.y = 120.f;
 
 	m_camera.BindEntity(player);
 

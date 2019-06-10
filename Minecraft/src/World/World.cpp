@@ -1,6 +1,7 @@
 #include <iostream>
 #include <future>
 
+#include <glm/vec3.hpp>
 #include <glm/ext.hpp>
 #include <glm/gtx/string_cast.hpp>
 
@@ -8,22 +9,25 @@
 #include "../Renderer/MainRenderer.h"
 #include "../Camera.h"
 
+#include "../Util/PositionUtilities.h"
+
 std::thread chunkThread;
 World::World(const Camera& camera) : m_chunkProvider(*this)
 {
+	std::cout << "[INFO/World] Loading world..." << std::endl;
 	for (int i = 0; i < 2; i++)
 	{
 		m_chunkThreads.emplace_back([&]()
 			{
+				std::cout << "[DEBUG/World/Loader_Thread] Started async chunk loader." << std::endl;
 				LoadChunks(camera);
 			});
 	}
-
-	//m_TestThread = std::thread([&]() { LoadChunks(camera); });
 }
 
 World::~World()
 {
+	std::cout << "[INFO/World] Shutting down current world, waiting for " << m_chunkThreads.size() << " threads to close..." << std::endl;
 	m_running = false;
 	for (auto& thread : m_chunkThreads)
 	{
@@ -31,9 +35,20 @@ World::~World()
 	}
 }
 
+void World::SetBlock(int x, int y, int z, Block block)
+{
+	auto chunkPos = PositionUtilities::WorldToChunkPosition(x, y, z);
+	auto blockPos = PositionUtilities::WorldToBlockPosition(x, y, z);
+
+	m_chunkProvider.GetChunk(chunkPos.x, chunkPos.z).SetBlock(blockPos.x, blockPos.y, blockPos.z, block);
+}
+
 Block World::GetBlock(int x, int y, int z)
 {
-	return Block();
+	auto chunkPos = PositionUtilities::WorldToChunkPosition(x, y, z);
+	auto blockPos = PositionUtilities::WorldToBlockPosition(x, y, z);
+
+	return m_chunkProvider.GetChunk(chunkPos.x, chunkPos.z).GetBlock(blockPos.x, blockPos.y, blockPos.z);
 }
 
 void World::Render(MainRenderer& renderer, const Camera& camera)
@@ -56,19 +71,19 @@ void World::Render(MainRenderer& renderer, const Camera& camera)
 
 		auto location = chunk.GetPosition();
 
-		if (minX > location.x ||
+		/*if (minX > location.x ||
 			minZ > location.y ||
 			maxZ < location.y ||
 			maxX < location.x)
 		{
 			iterator = chunks.erase(iterator);
 			continue;
-		}
-		else
-		{
+		}*/
+		//else
+		//{
 			chunk.Render(renderer, camera);
 			iterator++;
-		}
+		//}
 		//renderer.RenderChunk(chunk);
 	}
 }
@@ -91,10 +106,11 @@ void World::LoadChunks(const Camera& camera)
 		{
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-			//int minX = std::max(cameraX - i, 0);
-			//int minZ = std::max(cameraZ - i, 0);
-			int minX = cameraX - i;
-			int minZ = cameraZ - i;
+			// TODO: ChunkProvider - Fix minus coordinates
+			int minX = std::max(cameraX - i, 0);
+			int minZ = std::max(cameraZ - i, 0);
+			//int minX = cameraX - i;
+			//int minZ = cameraZ - i;
 			int maxX = cameraX + i;
 			int maxZ = cameraZ + i;
 

@@ -11,12 +11,15 @@ Chunk::Chunk(World& world, const glm::ivec2& position)
 
 Block Chunk::GetBlock(int x, int y, int z) const noexcept
 {
-	return Block();
+	if (OutOfBounds(x, y, z))
+		return BlockId::Air;
+
+	return m_sections[y / CHUNK_SIZE].GetBlock(x, y % CHUNK_SIZE, z);
 }
 
 void Chunk::SetBlock(int x, int y, int z, Block block)
 {
-	// Make sure enough sections are made
+	// Make sure enough sections are made, aka allocation....
 	int sIndex = (y / CHUNK_SIZE) + 1;
 
 	while (m_sections.size() < sIndex)
@@ -24,6 +27,9 @@ void Chunk::SetBlock(int x, int y, int z, Block block)
 		int y = m_sections.size();
 		m_sections.emplace_back(glm::ivec3(m_position.x, y, m_position.y), *m_world);
 	}
+
+	if (OutOfBounds(x, y, z))
+		return;
 
 	m_sections[y / CHUNK_SIZE].SetBlock(x, y % CHUNK_SIZE, z, block);
 }
@@ -74,6 +80,22 @@ void Chunk::Render(MainRenderer& renderer, const Camera& camera)
 			renderer.RenderChunk(section);
 		//renderer.Add(section.GetMesh());
 	}
+}
+
+bool Chunk::OutOfBounds(int x, int y, int z) const noexcept
+{
+	if (x >= CHUNK_SIZE || z >= CHUNK_SIZE)
+		return true;
+
+	if (x < 0 || y < 0 || z < 0)
+	//	return true;
+	//if (y < 0)
+		return true;
+
+	if (y >= (int)m_sections.size() * CHUNK_SIZE)
+		return true;
+
+	return false;
 }
 
 ChunkSection& Chunk::GetSection(int index)
