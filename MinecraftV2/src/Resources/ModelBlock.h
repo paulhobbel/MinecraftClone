@@ -6,21 +6,24 @@
 #include <nlohmann/json.hpp>
 
 #include "BlockPart.h"
+#include "../ResourceLoader.h"
 
 class ModelBlock
 {
+	friend class ResourceLoader;
 public:
+	std::string id;
 	std::string parentLocation;
 
 	std::vector<BlockPart> elements;
 	std::map<std::string, std::string> textures;
 
-	bool is_resolved();
-	bool HasParent();
+	bool isResolved() const;
+	bool hasParent() const;
 
-	ModelBlock& GetParent();
-private:
-	ModelBlock* m_parent;
+	ModelBlock& getParent() const;
+protected:
+	ModelBlock* mParent = nullptr;
 
 	
 };
