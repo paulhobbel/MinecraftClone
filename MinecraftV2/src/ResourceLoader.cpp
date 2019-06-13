@@ -55,7 +55,9 @@ void ResourceLoader::loadBlocks()
 		auto& parent = mBlocks.at(block->parentLocation);
 		if(!parent.isResolved())
 		{
+			resolveQueue.push(block);
 			resolveQueue.push(&parent);
+			resolveQueue.pop();
 			continue;
 		}
 
