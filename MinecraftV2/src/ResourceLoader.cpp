@@ -3,11 +3,15 @@
 
 #include <iostream>
 #include <queue>
-
-#include "Resources/ModelBlock.h"
+#include <set>
 
 #include "Util/FileUtil.h"
 #include "Util/Stopwatch.h"
+
+ResourceLoader::ResourceLoader()
+{
+	mAtlasTexture = new AtlasTexture();
+}
 
 void ResourceLoader::loadBlocks()
 {
@@ -55,9 +59,9 @@ void ResourceLoader::loadBlocks()
 		auto& parent = mBlocks.at(block->parentLocation);
 		if(!parent.isResolved())
 		{
-			resolveQueue.push(block);
-			resolveQueue.push(&parent);
 			resolveQueue.pop();
+			resolveQueue.emplace(block);
+			resolveQueue.push(&parent);
 			continue;
 		}
 
@@ -71,4 +75,39 @@ void ResourceLoader::loadBlocks()
 	}
 
 	std::cout << "[INFO/ResourceLoader] Resolved " << mBlocks.size() << " model blocks, took " << stopwatch.reset() << "ms" << std::endl;
+
+	
+	registerTextures();
+	
+
+	std::cout << "[ERROR/TextureMap] Failed to build atlas, error: ALLOC_FAILED" << std::endl;
+}
+
+void ResourceLoader::registerTextures()
+{
+	Stopwatch stopwatch;
+	std::set<std::string> textures;
+	for (auto& entry : mBlocks)
+	{
+		for (auto& element : entry.second.getElements())
+		{
+			for (auto& face : element.faces)
+			{
+				std::string resolvedTexture = entry.second.resolveTexture(face.second.texture);
+				if(resolvedTexture != "noexists")
+					textures.emplace(resolvedTexture);
+			}
+		}
+	}
+
+	std::cout << "[INFO/ResourceLoader] Resolved " << textures.size() << " textures, took " << stopwatch.reset() << "ms" << std::endl;
+
+	for(auto texture : textures)
+	{
+		mAtlasTexture->registerSprite(texture);
+	}
+
+	mAtlasTexture->compile();
+
+	std::cout << "[INFO/ResourceLoader] Compiled atlas texture, took " << stopwatch.reset() << "ms" << std::endl;
 }

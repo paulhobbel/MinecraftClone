@@ -76,6 +76,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)deps/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -126,6 +127,12 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Renderer\GLResource.cpp" />
     <ClCompile Include="src\Renderer\Shader.cpp" />
+    <ClCompile Include="src\Renderer\Texture\AtlasTexture.cpp" />
+    <ClCompile Include="src\Renderer\Texture\BaseTexture.cpp" />
+    <ClCompile Include="src\Renderer\Texture\Image\ImageSizeInfo.h" />
+    <ClCompile Include="src\Renderer\Texture\Image\RawImage.cpp" />
+    <ClCompile Include="src\Renderer\Texture\TextureAtlasSprite.cpp" />
+    <ClCompile Include="src\Renderer\Texture\TextureMap.cpp" />
     <ClCompile Include="src\ResourceLoader.cpp" />
     <ClCompile Include="src\Resources\BlockPart.cpp" />
     <ClCompile Include="src\Resources\BlockPartFace.cpp" />
@@ -134,8 +141,16 @@
     <ClCompile Include="src\Util\Stopwatch.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="deps\include\stb_image.h" />
+    <ClInclude Include="deps\include\stb_image_write.h" />
+    <ClInclude Include="deps\include\stb_rect_pack.h" />
     <ClInclude Include="src\Renderer\GLResource.h" />
     <ClInclude Include="src\Renderer\Shader.h" />
+    <ClInclude Include="src\Renderer\Texture\AtlasTexture.h" />
+    <ClInclude Include="src\Renderer\Texture\BaseTexture.h" />
+    <ClInclude Include="src\Renderer\Texture\Image\RawImage.h" />
+    <ClInclude Include="src\Renderer\Texture\TextureAtlasSprite.h" />
+    <ClInclude Include="src\Renderer\Texture\TextureMap.h" />
     <ClInclude Include="src\ResourceLoader.h" />
     <ClInclude Include="src\Resources\BlockPart.h" />
     <ClInclude Include="src\Resources\BlockPartFace.h" />
@@ -144,10 +159,18 @@
     <ClInclude Include="src\Util\Stopwatch.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\models\block\a.json" />
+    <None Include="res\models\block\cube_top.json" />
+    <None Include="res\models\block\grass.json" />
+    <None Include="res\models\block\stone.json" />
     <None Include="res\models\block\cube.json" />
     <None Include="res\models\block\cube_all.json" />
     <None Include="res\models\block\dirt.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\textures\blocks\dirt.png" />
+    <Image Include="res\textures\blocks\grass_side.png" />
+    <Image Include="res\textures\blocks\grass_top.png" />
+    <Image Include="res\textures\blocks\stone.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

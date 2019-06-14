@@ -42,6 +42,24 @@
     <ClCompile Include="src\Util\Stopwatch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Renderer\Texture\TextureMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\Texture\TextureAtlasSprite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\Texture\Image\RawImage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\Texture\Image\ImageSizeInfo.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\Texture\BaseTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\Texture\AtlasTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Renderer\GLResource.h">
@@ -68,11 +86,51 @@
     <ClInclude Include="src\Util\Stopwatch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Renderer\Texture\TextureMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\Texture\TextureAtlasSprite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\Texture\Image\RawImage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\include\stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\Texture\BaseTexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\Texture\AtlasTexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\include\stb_rect_pack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\include\stb_image_write.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\models\block\cube.json" />
     <None Include="res\models\block\cube_all.json" />
     <None Include="res\models\block\dirt.json" />
-    <None Include="res\models\block\a.json" />
+    <None Include="res\models\block\stone.json" />
+    <None Include="res\models\block\grass.json" />
+    <None Include="res\models\block\cube_top.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\textures\blocks\dirt.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\textures\blocks\grass_side.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\textures\blocks\grass_top.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\textures\blocks\stone.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

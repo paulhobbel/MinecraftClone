@@ -16,11 +16,6 @@ Shader::~Shader()
 }
 
 
-void Shader::create()
-{
-	glFlush();
-}
-
 void Shader::dispose()
 {
 	if (mId)

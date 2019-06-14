@@ -6,7 +6,8 @@
 #include <nlohmann/json.hpp>
 
 #include "BlockPart.h"
-#include "../ResourceLoader.h"
+
+class ResourceLoader;
 
 class ModelBlock
 {
@@ -18,13 +19,34 @@ public:
 	std::vector<BlockPart> elements;
 	std::map<std::string, std::string> textures;
 
+	std::vector<BlockPart> getElements() const;
+
+	std::string resolveTexture(const std::string& name) noexcept;
+
 	bool isResolved() const;
 	bool hasParent() const;
 
 	ModelBlock& getParent() const;
+
+
+	bool operator==(const ModelBlock& lhs) const
+	{
+		return lhs.id == id;
+	}
+
 protected:
 	ModelBlock* mParent = nullptr;
 
+private:
+	struct LookupRegistry
+	{
+		ModelBlock* model;
+		ModelBlock* extModel;
+	};
+
+	std::string resolveTexture(const std::string& name, LookupRegistry* registry);
+
+	
 	
 };
 

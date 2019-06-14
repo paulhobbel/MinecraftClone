@@ -3,8 +3,6 @@
 class GLResource
 {
 public:
-	
 	virtual ~GLResource() = default;
-	virtual void create();
-	virtual void dispose();
+	virtual void dispose() = 0;
 };

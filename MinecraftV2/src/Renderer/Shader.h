@@ -12,7 +12,6 @@ public:
 	Shader(const Shader& other);
 	~Shader() override;
 
-	void create() override;
 	void dispose() override;
 private:
 	GLint mId;
