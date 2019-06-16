@@ -10,6 +10,9 @@ RawImage::RawImage() : mInfo({0, 0, 0}), mData(nullptr)
 
 RawImage::RawImage(ImageSizeInfo info) : mInfo(info), mData(nullptr)
 {
+	// QUICKFIX:
+	mInfo.bpp = 4;
+
 	alloc();
 }
 
@@ -17,19 +20,18 @@ RawImage* RawImage::allocImage(int width, int height)
 {
 	const auto image = new RawImage();
 
-	image->mData = static_cast<uint32_t*>(calloc(4, width * height));
+	image->mData = static_cast<unsigned char*>(calloc(4, width * height));
+	image->mInfo = { width, height, 4 };
 
 	return image;
 }
 
-RawImage* RawImage::loadImage(std::string& fileName)
+RawImage* RawImage::loadImage(const std::string fileName)
 {
 	auto image = new RawImage();
 
 	//stbi_set_flip_vertically_on_load(true);
-	void* data = stbi_load(fileName.c_str(), &image->mInfo.width, &image->mInfo.height, &image->mInfo.bpp, STBI_rgb_alpha);
-
-	image->mData = (uint32_t*) data;
+	image->mData = stbi_load(fileName.c_str(), &image->mInfo.width, &image->mInfo.height, &image->mInfo.bpp, STBI_rgb_alpha);
 
 	if (image->mData == nullptr)
 	{
@@ -46,7 +48,7 @@ RawImage::~RawImage()
 
 void RawImage::alloc()
 {
-	mData = static_cast<uint32_t*>(calloc(4, mInfo.width * mInfo.height));
+	mData = static_cast<unsigned char*>(calloc(mInfo.bpp, mInfo.width * mInfo.height));
 	if (mData == nullptr)
 		std::cout << "Unable to allocate memory!" << std::endl;
 }
@@ -56,13 +58,19 @@ void RawImage::blit(RawImage& other, int x, int y) const
 	for(int i = 0; i < other.getHeight(); i++)
 	{
 		int dy = y + i;
-		if (dy < 0 || dy >= getHeight()) continue;
+		if (dy < 0 || dy >= getHeight())
+			continue;
 
 		for(int j = 0; j < other.getWidth(); j++)
 		{
 			int dx = x + j;
-			if (dx < 0 || dx >= getWidth()) continue;
-			mData[dx + dy * getWidth()] = other.mData[i * other.getWidth() + j];
+			if (dx < 0 || dx >= getWidth())
+				continue;
+
+			memcpy(
+				mData + (mInfo.bpp * (dy * getWidth() + dx)),
+				other.mData + (mInfo.bpp * (i * other.getWidth() + j)),
+				mInfo.bpp);
 		}
 	}
 }
@@ -77,7 +85,7 @@ int RawImage::getHeight() const
 	return mInfo.height;
 }
 
-const uint32_t* RawImage::getBitmap() const
+const unsigned char* RawImage::getBitmap() const
 {
 	return mData;
 }

@@ -42,9 +42,6 @@
     <ClCompile Include="src\Util\Stopwatch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Renderer\Texture\TextureMap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Renderer\Texture\TextureAtlasSprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -86,9 +83,6 @@
     <ClInclude Include="src\Util\Stopwatch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Renderer\Texture\TextureMap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Renderer\Texture\TextureAtlasSprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -112,14 +106,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\models\block\cube.json" />
-    <None Include="res\models\block\cube_all.json" />
-    <None Include="res\models\block\dirt.json" />
-    <None Include="res\models\block\stone.json" />
-    <None Include="res\models\block\grass.json" />
-    <None Include="res\models\block\cube_top.json" />
-  </ItemGroup>
-  <ItemGroup>
     <Image Include="res\textures\blocks\dirt.png">
       <Filter>Resource Files</Filter>
     </Image>
@@ -132,5 +118,16 @@
     <Image Include="res\textures\blocks\stone.png">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\models\block\cube.json" />
+    <None Include="res\models\block\cube_all.json" />
+    <None Include="res\models\block\cube_column.json" />
+    <None Include="res\models\block\cube_top.json" />
+    <None Include="res\models\block\dirt.json" />
+    <None Include="res\models\block\grass.json" />
+    <None Include="res\models\block\oak_log.json" />
+    <None Include="res\models\block\stone.json" />
+    <None Include="res\models\block\white_wool.json" />
   </ItemGroup>
 </Project>

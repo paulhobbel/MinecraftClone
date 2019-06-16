@@ -15,5 +15,7 @@ int main(int argc, char* argv[])
 
 	loader->loadBlocks();
 
+	std::cin.get();
+
 	return 0;
 }

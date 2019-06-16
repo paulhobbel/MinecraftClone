@@ -80,7 +80,7 @@ void ResourceLoader::loadBlocks()
 	registerTextures();
 	
 
-	std::cout << "[ERROR/TextureMap] Failed to build atlas, error: ALLOC_FAILED" << std::endl;
+	//std::cout << "[ERROR/TextureMap] Failed to build atlas, error: ALLOC_FAILED" << std::endl;
 }
 
 void ResourceLoader::registerTextures()

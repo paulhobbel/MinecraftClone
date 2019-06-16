@@ -1,127 +1,141 @@
 ﻿#include "AtlasTexture.h"
-#include <vector>
 #include <iostream>
+#include <string>
+
+using namespace std::string_literals;
 
 #define STB_RECT_PACK_IMPLEMENTATION
 #include <stb_rect_pack.h>
 
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include <stb_image_write.h>
-
 #include "Image/RawImage.h"
 
-int round_up_po2(int n) {
-	int x = 1;
-	while (x < n) x <<= 1;
-	return x;
-}
+#include "../../Util/Stopwatch.h"
 
 TextureAtlasSprite& AtlasTexture::registerSprite(std::string& location)
 {
-	if (mRegisteredSprites.find({ location }) != mRegisteredSprites.end())
-		return *mRegisteredSprites.at(location);
+	if (mSprites.find(location) != mSprites.end())
+		return *mSprites.at(location);
 
 	auto registeredSprite = new TextureAtlasSprite(location);
 
-	mRegisteredSprites.emplace(location, registeredSprite);
+	mSprites.emplace(location, registeredSprite);
 
 	return *registeredSprite;
 }
 
+TextureAtlasSprite& AtlasTexture::getSprite(std::string& location)
+{
+	auto noexists = TextureAtlasSprite("noexists");
+
+	if (mSprites.find(location) == mSprites.end())
+		return noexists;
+
+	return *mSprites.at(location);
+}
+
 void AtlasTexture::compile()
 {
-	//std::vector<RawImage*> images;
-	AtlasImpl atlas;
+	Stopwatch stopwatch;
+	AtlasContext context(static_cast<int>(mSprites.size()));
 	
-	for(auto& entry : mRegisteredSprites)
+	for(auto& entry : mSprites)
 	{
-		std::string location = "res/textures/" + entry.first + ".png";
-		const auto image = RawImage::loadImage(location);
+		entry.second->loadSprite();
+	}
+	std::cout << "[DEBUG/AtlasTexture] Loaded " << mSprites.size() << " sprites, took " << stopwatch.reset() << "ms" << std::endl;
 
-		if (image != nullptr)
-			atlas.addImage(image);
+	std::map<int, TextureAtlasSprite*> rectToSpriteMap;
+	packSprites(context, rectToSpriteMap);
+	allocAtlas(context);
+	linkSprites(context, rectToSpriteMap);
+	stitchAtlas(context);
+}
+
+AtlasTexture::AtlasContext::AtlasContext(const int numRects)
+{
+	num_rects = numRects;
+	nodes = new stbrp_node[4096];
+	rects = new stbrp_rect[numRects];
+	
+}
+
+void AtlasTexture::packSprites(AtlasContext& context, std::map<int, TextureAtlasSprite*>& rectToSpriteMap)
+{
+	auto itr = mSprites.begin();
+	for (auto i = 0; itr != mSprites.end(); ++itr, i++)
+	{
+		auto& rect = context.rects[i];
+
+		rect.id = i;
+		rect.w = itr->second->getWidth();
+		rect.h = itr->second->getHeight();
+		rectToSpriteMap.emplace(i, itr->second);
+
+		if (rect.w > context.width) context.width = rect.w;
+		if (rect.h > context.height) context.height = rect.h;
+	}
+}
+
+void AtlasTexture::allocAtlas(AtlasContext& context)
+{
+	if(context.num_rects == 0)
+	{
+		std::cout << "[ERROR/AtlasTexture] Failed to allocate atlas, no sprites to allocate!" << std::endl;
+		return;
 	}
 
-	while (atlas.getStatus() != AtlasImpl::ATLAS_IMPL_DONE)
+	Stopwatch stopwatch;
+
+	while(!context.allocated)
 	{
-		atlas.packImages();
-	}
+		stbrp_init_target(&context.context, context.width, context.height, context.nodes, 4096);
 
-	atlas.compile();
-}
-
-AtlasTexture::AtlasImpl::AtlasImpl()
-{
-	mNodes = new stbrp_node[4096];
-	mRects = new stbrp_rect[MAX_SPRITES];
-}
-
-AtlasTexture::AtlasImpl::~AtlasImpl()
-{
-	delete[] mNodes;
-	delete[] mRects;
-	//delete[] mAtlasImage;
-}
-
-AtlasTexture::AtlasImpl::AtlasStatus AtlasTexture::AtlasImpl::getStatus() const
-{
-	return mStatus;
-}
-
-void AtlasTexture::AtlasImpl::addImage(RawImage* image)
-{
-	mImages.emplace_back(image);
-}
-
-bool AtlasTexture::AtlasImpl::packImages()
-{
-	for (size_t i = 0; i < mImages.size(); i++)
-	{
-		const auto image = mImages[i];
-
-		mRects[i].id = i;
-		mRects[i].w = image->getWidth();
-		mRects[i].h = image->getHeight();
-
-		if (mRects[i].w > mAtlasInfo.width) mAtlasInfo.width = round_up_po2(mRects[i].w);
-		if (mRects[i].h > mAtlasInfo.height) mAtlasInfo.height = round_up_po2(mRects[i].h);
-	}
-
-	stbrp_context ctx;
-	stbrp_init_target(&ctx, mAtlasInfo.width, mAtlasInfo.height, mNodes, 4096);
-	stbrp_pack_rects(&ctx, mRects, mImages.size());
-
-	for (size_t i = 0; i < mImages.size(); i++)
-	{
-		if (!mRects[i].was_packed)
+		if (!stbrp_pack_rects(&context.context, context.rects, context.num_rects))
 		{
-			if(mAtlasInfo.height < mAtlasInfo.width)
+			if (context.height < context.width)
 			{
-				mAtlasInfo.height = mAtlasInfo.width;
-			} else
+				context.height = context.width;
+			}
+			else
 			{
-				mAtlasInfo.width *= 2;
+				context.width *= 2;
 			}
 
-			return false;
+			continue;
 		}
+
+		context.allocated = true;
 	}
 
-	mStatus = ATLAS_IMPL_DONE;
-	return true;
+	mAtlasImage = RawImage::allocImage(context.width, context.height);
+
+	std::cout << "[DEBUG/AtlasTexture] Allocated atlas image with dimension [ " << mAtlasImage->getWidth() << "x" << mAtlasImage->getHeight() << " ], took " << stopwatch.reset() << "ms" << std::endl;
 }
 
-bool AtlasTexture::AtlasImpl::compile()
+void AtlasTexture::linkSprites(AtlasContext& context, std::map<int, TextureAtlasSprite*> rectToSpriteMap)
 {
-	if (mStatus != ATLAS_IMPL_DONE)
-		return false;
-
-	mAtlasImage = new RawImage(mAtlasInfo);
-
-	for(size_t i = 0; i < mImages.size(); i++)
+	for(int i = 0; i < context.num_rects; i++)
 	{
-		mAtlasImage->blit(*mImages[mRects[i].id], mRects[i].x, mRects[i].y);
+		auto& rect = context.rects[i];
+		rectToSpriteMap.at(i)->linkAtlas(context.width, context.height, rect.x, rect.y);
+	}
+}
+
+void AtlasTexture::stitchAtlas(AtlasContext& context)
+{
+	if(mAtlasImage == nullptr)
+	{
+		std::cout << "[ERROR/AtlasTexture] Unable to stitch sprites! mAtlasImage not allocated, did you not call allocAtlas?" << std::endl;
+		return;
 	}
 
-	stbi_write_png("test.png", mAtlasImage->getWidth(), mAtlasImage->getHeight(), 4, mAtlasImage->getBitmap(), 0);
+	Stopwatch stopwatch;
+
+	for (auto& entry : mSprites)
+	{
+		mAtlasImage->blit(entry.second->getImage(), entry.second->getOrigin().x, entry.second->getOrigin().y);
+	}
+	std::cout << "[DEBUG/AtlasTexture] Stitched " << mSprites.size() << " sprites in the atlas texture, took " << stopwatch.reset() << "ms" << std::endl;
 }
+
+
