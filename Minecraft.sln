@@ -3,9 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28922.388
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Minecraft", "Minecraft\Minecraft.vcxproj", "{DA50D391-6CE2-48D1-A9CD-F1E76903D256}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MinecraftV2", "MinecraftV2\MinecraftV2.vcxproj", "{6E0B57AC-2034-4849-8A62-1398AA7E16DB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Minecraft", "Minecraft\Minecraft.vcxproj", "{6E0B57AC-2034-4849-8A62-1398AA7E16DB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,14 +13,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{DA50D391-6CE2-48D1-A9CD-F1E76903D256}.Debug|x64.ActiveCfg = Debug|x64
-		{DA50D391-6CE2-48D1-A9CD-F1E76903D256}.Debug|x64.Build.0 = Debug|x64
-		{DA50D391-6CE2-48D1-A9CD-F1E76903D256}.Debug|x86.ActiveCfg = Debug|Win32
-		{DA50D391-6CE2-48D1-A9CD-F1E76903D256}.Debug|x86.Build.0 = Debug|Win32
-		{DA50D391-6CE2-48D1-A9CD-F1E76903D256}.Release|x64.ActiveCfg = Release|x64
-		{DA50D391-6CE2-48D1-A9CD-F1E76903D256}.Release|x64.Build.0 = Release|x64
-		{DA50D391-6CE2-48D1-A9CD-F1E76903D256}.Release|x86.ActiveCfg = Release|Win32
-		{DA50D391-6CE2-48D1-A9CD-F1E76903D256}.Release|x86.Build.0 = Release|Win32
 		{6E0B57AC-2034-4849-8A62-1398AA7E16DB}.Debug|x64.ActiveCfg = Debug|x64
 		{6E0B57AC-2034-4849-8A62-1398AA7E16DB}.Debug|x64.Build.0 = Debug|x64
 		{6E0B57AC-2034-4849-8A62-1398AA7E16DB}.Debug|x86.ActiveCfg = Debug|Win32

@@ -1,64 +1,53 @@
-#include <iostream>
-
-#include <glm/vec3.hpp>
-
-#include "../World/Chunk/Chunk.h"
-#include "../World/Chunk/ChunkMesh.h"
-#include "ChunkRenderer.h"
+﻿#include "ChunkRenderer.h"
 #include "../Camera.h"
+#include <iostream>
+#include "../Resources/ResourceManager.h"
+#include "Texture/AtlasTexture.h"
 
-#include "../Model.h"
-#include "../Shader/Shader.h"
-#include "../Texture/Texture.h"
-
-Texture dirtTexture;
-
-ChunkRenderer::ChunkRenderer()
+void ChunkRenderer::init(const ResourceManager& resourceManager)
 {
+	mShader.create();
+	mTexture = &resourceManager.getAtlasTexture();
+
+	testTexture.loadFromFileS("res/textures/blocks/dirt.png");
 }
 
-void ChunkRenderer::Init()
+void ChunkRenderer::addMesh(std::shared_ptr<ChunkMesh> mesh)
 {
-	m_shader.Create();
-
-	dirtTexture.Create("res/textures/dirt.png");
+	mChunks.push_back(mesh);
 }
 
-void ChunkRenderer::AddMesh(const ChunkMesh& mesh)
+void ChunkRenderer::render(const Camera& camera)
 {
-	m_chunks.push_back(&mesh);
-}
-
-void ChunkRenderer::Render(Camera& camera)
-{
-	if (m_chunks.empty())
+	if (mChunks.empty())
 		return;
 
-	m_shader.UseProgram();
+	mShader.useProgram();
 
-	m_shader.LoadProjectionViewMatrix(camera.getProjectionViewMatrix());
+	mShader.loadProjectionViewMatrix(camera.getProjectionViewMatrix());
 
-	dirtTexture.Bind();
+	mTexture->bind();
+	//glBindTexture(GL_TEXTURE_2D, mTexture->getId());
+	//glColor3f(0.1, 1.0, 1.0);
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	for (auto& mesh : m_chunks)
+	for (auto& mesh : mChunks)
 	{
-		if (mesh->GetModel().GetIndicesCount() == 0)
+		if (mesh->getIndicesCount() == 0)
 		{
 			//std::cout << "[WARN/ChunkRenderer] Tried rendering a chunk section with 0 indices, did something break?" << std::endl;
 			continue;
 		}
 
-		mesh->GetModel().BindVAO();
-		//glBindVertexArray(info->vao);
-		glDrawElements(GL_TRIANGLES, mesh->GetModel().GetIndicesCount(), GL_UNSIGNED_INT, nullptr);
+		mesh->bindVao();
+		glDrawElements(GL_TRIANGLES, mesh->getIndicesCount(), GL_UNSIGNED_INT, nullptr);
 	}
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	GLenum lastError = glGetError();
 
-	//if (lastError != GL_NO_ERROR)
-		//std::cout << "[ERROR/ChunkRenderer] GL Error: " << lastError << std::endl;
+	if (lastError != GL_NO_ERROR)
+		std::cout << "[ERROR/ChunkRenderer] GL Error: " << lastError << std::endl;
 
-	m_chunks.clear();
+	mChunks.clear();
 }

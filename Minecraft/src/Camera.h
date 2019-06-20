@@ -1,8 +1,8 @@
-#pragma once
+﻿#pragma once
 
 #include <glm/matrix.hpp>
 #include "Entity.h"
-#include "Util/ViewFrustum.h"
+#include "ViewFrustum.h"
 
 class GameWindow;
 
@@ -11,21 +11,21 @@ class Camera : public Entity
 public:
 	Camera();
 
-	void BindEntity(const Entity& entity) noexcept;
-	void SetPerspective(glm::vec2 windowSize) noexcept;
-	void Update() noexcept;
+	void bindEntity(const Entity& entity) noexcept;
+	void setPerspective(glm::vec2 windowSize) noexcept;
+	void update() noexcept;
 
 	glm::mat4& getProjectionMatrix();
 	glm::mat4& getViewMatrix();
-	glm::mat4& getProjectionViewMatrix();
+	const glm::mat4& getProjectionViewMatrix() const;
 
 	const ViewFrustum& getFrustum() const noexcept;
 private:
-	const Entity* m_entity;
-	ViewFrustum m_frustum;
+	const Entity* mEntity;
+	ViewFrustum mFrustum;
 
-	glm::mat4 m_projectionMatrix;
-	glm::mat4 m_viewMatrix;
-	glm::mat4 m_projViewMatrix;
+	glm::mat4 mProjectionMatrix;
+	glm::mat4 mViewMatrix;
+	glm::mat4 mProjViewMatrix;
 };
 

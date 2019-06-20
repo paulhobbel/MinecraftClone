@@ -93,6 +93,13 @@ void Player::handleInput(GameWindow& window)
 
 void Player::update(double deltaTime, World& world)
 {
+	// TODO: Remove this later when ChunkProvider can have chunks in minus
+	if (!mFlying)
+	{
+		if (position.x < 0) position.x = 0;
+		if (position.z < 0) position.z = 0;
+	}
+
 	velocity += mAcceleration;
 	mAcceleration = { 0, 0, 0 };
 

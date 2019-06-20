@@ -135,6 +135,10 @@ std::string ResourceManager::getLocationById(BlockId id)
 		return "block/grass";
 	case Stone:
 		return "block/stone";
+	case OakLog:
+		return "block/oak_log";
+	case WhiteWool:
+		return "block/white_wool";
 
 	}
 

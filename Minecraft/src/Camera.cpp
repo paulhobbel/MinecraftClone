@@ -1,66 +1,62 @@
-#include <iostream>
+﻿#include <iostream>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Camera.h"
-#include "GameWindow.h"
-#include "Keyboard.h"
-#include "Mouse.h"
-#include "Constants.h"
 
 Camera::Camera()
 {
-	m_projectionMatrix = glm::perspective(glm::radians(60.f), (float) 1280.f / (float) 720.f, .1f, 2000.f);
-	m_viewMatrix = glm::mat4();
-	m_projViewMatrix = glm::mat4();
+	mProjectionMatrix = glm::perspective(glm::radians(60.f), (float)1280.f / (float)720.f, .1f, 2000.f);
+	mViewMatrix = glm::mat4();
+	mProjViewMatrix = glm::mat4();
 }
 
-void Camera::BindEntity(const Entity& entity) noexcept
+void Camera::bindEntity(const Entity& entity) noexcept
 {
-	m_entity = &entity;
+	mEntity = &entity;
 }
 
-void Camera::SetPerspective(glm::vec2 size) noexcept
+void Camera::setPerspective(glm::vec2 size) noexcept
 {
-	m_projectionMatrix = glm::perspective(glm::radians(60.f), size.x / size.y, .1f, 2000.f);
+	mProjectionMatrix = glm::perspective(glm::radians(60.f), size.x / size.y, .1f, 2000.f);
 }
 
-void Camera::Update() noexcept
+void Camera::update() noexcept
 {
-	position = { m_entity->position.x, m_entity->position.y + 0.6f, m_entity->position.z };
-	rotation = m_entity->rotation;
+	position = { mEntity->position.x, mEntity->position.y + 0.6f, mEntity->position.z };
+	rotation = mEntity->rotation;
 
 	//std::cout << "Chunk: " << position.x / CHUNK_SIZE << " " << position.z / CHUNK_SIZE << ", Position: " << glm::to_string(position) << ", rotation: " << glm::to_string(rotation) << std::endl;
 
-	m_viewMatrix = glm::mat4(1.f);
+	mViewMatrix = glm::mat4(1.f);
 
-	m_viewMatrix = glm::rotate(m_viewMatrix, glm::radians(rotation.x), { 1, 0, 0 });
-	m_viewMatrix = glm::rotate(m_viewMatrix, glm::radians(rotation.y), { 0, 1, 0 });
-	m_viewMatrix = glm::rotate(m_viewMatrix, glm::radians(rotation.z), { 0, 0, 1 });
+	mViewMatrix = glm::rotate(mViewMatrix, glm::radians(rotation.x), { 1, 0, 0 });
+	mViewMatrix = glm::rotate(mViewMatrix, glm::radians(rotation.y), { 0, 1, 0 });
+	mViewMatrix = glm::rotate(mViewMatrix, glm::radians(rotation.z), { 0, 0, 1 });
 
-	m_viewMatrix = glm::translate(m_viewMatrix, -position);
+	mViewMatrix = glm::translate(mViewMatrix, -position);
 
-	m_projViewMatrix = m_projectionMatrix * m_viewMatrix;
+	mProjViewMatrix = mProjectionMatrix * mViewMatrix;
 
-	m_frustum.Update(m_projViewMatrix);
+	mFrustum.update(mProjViewMatrix);
 }
 
 glm::mat4& Camera::getProjectionMatrix()
 {
-	return m_projectionMatrix;
+	return mProjectionMatrix;
 }
 
 glm::mat4& Camera::getViewMatrix()
 {
-	return m_viewMatrix;
+	return mViewMatrix;
 }
 
-glm::mat4& Camera::getProjectionViewMatrix()
+const glm::mat4& Camera::getProjectionViewMatrix() const
 {
-	return m_projViewMatrix;
+	return mProjViewMatrix;
 }
 
 const ViewFrustum& Camera::getFrustum() const noexcept
 {
-	return m_frustum;
+	return mFrustum;
 }

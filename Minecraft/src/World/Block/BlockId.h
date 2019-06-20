@@ -4,11 +4,14 @@
 
 using Block_t = uint8_t;
 
-enum class BlockId : Block_t
+enum BlockId : Block_t
 {
-	Air		= 0,
-	Grass	= 1,
-	Dirt	= 2,
-	Stone	= 3,
-	Sand	= 4
+	Air,
+	Grass,
+	Dirt,
+	Stone,
+	OakLog,
+	WhiteWool,
+
+	NUM_BLOCKS
 };

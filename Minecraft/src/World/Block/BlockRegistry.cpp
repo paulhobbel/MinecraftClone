@@ -22,5 +22,6 @@ BlockRegistry::BlockRegistry()
 	mBlocks.emplace(BlockId::Grass, std::make_shared<BlockData>(BlockType::SOLID));
 	mBlocks.emplace(BlockId::Dirt, std::make_shared<BlockData>(BlockType::SOLID));
 	mBlocks.emplace(BlockId::Stone, std::make_shared<BlockData>(BlockType::SOLID));
-	mBlocks.emplace(BlockId::Sand, std::make_shared<BlockData>(BlockType::SOLID));
+	mBlocks.emplace(BlockId::OakLog, std::make_shared<BlockData>(BlockType::SOLID));
+	mBlocks.emplace(BlockId::WhiteWool, std::make_shared<BlockData>(BlockType::SOLID));
 }
