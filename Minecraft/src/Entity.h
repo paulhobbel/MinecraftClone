@@ -2,11 +2,11 @@
 
 #include <glm/vec3.hpp>
 
-#include "Util/AABB.h"
+#include "AABB.h"
 
 struct Entity
 {
-	Entity() : 
+	Entity() :
 		position(glm::vec3(0.f)),
 		rotation(glm::vec3(0.f)),
 		velocity(glm::vec3(0.f)),

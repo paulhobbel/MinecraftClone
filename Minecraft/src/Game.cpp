@@ -1,53 +1,56 @@
 #include <iostream>
-#include <functional>
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 
-#include "Keyboard.h"
+#include "Input/Keyboard.h"
 #include "Game.h"
+#include "States/PlayingState.h"
+#include "Input/Mouse.h"
 
-#include "World/Entities/Player.h"
+//#include "World/Entities/Player.h"
 
-Game::Game() : m_world(m_camera)
+Game::Game()
 {
 	std::cout << "[INFO/Game] Initializing game..." << std::endl;
-
-	if (!glfwInit())
-		exit(EXIT_FAILURE);
 	
-
-	m_window = new GameWindow(1280, 720, "Minecraft");
-
-	if (!m_window->Initialized())
-	{
-		glfwTerminate();
-		return;
-	}
-
-	m_window->SetGLContext();
+	mResourceManager = std::make_shared<ResourceManager>();
+	mWindow = std::make_shared<GameWindow>(1280, 720, "Minecraft");
 
 	// Initialize everything that needs opengl
-	m_renderer.Init();
+	//m_renderer.Init();
 
-	m_window->SetResizeCallback([this](glm::vec2 windowSize) {
-		m_camera.SetPerspective(windowSize);
+	mWindow->setResizeCallback([this](glm::vec2 windowSize) {
+		mCamera.setPerspective(windowSize);
 	});
 
-	m_window->SetInputCallback([this](int key, int scanCode, int action, int mods) {
-		Keyboard::UpdateKey(key, action);
+	mWindow->setInputCallback([](int key, int scanCode, int action, int mods) {
+		Keyboard::updateKey(key, action);
 	});
+
+	mWindow->setMouseButtonCallback([](int button, int action) {
+		Mouse::updateButton(button, action);
+	});
+
+	mResourceManager->loadBlocks();
+	mResourceManager->loadBlockTextures();
+
+	mWindow->setGLContext();
+
+	glEnable(GL_TEXTURE_2D);
+
+	mResourceManager->uploadBlockAtlas();
+
+	mRenderer.init(*mResourceManager);
+
+	pushState<PlayingState>(*this);
 
 	std::cout << "[INFO/Game] Done Initializing" << std::endl;
 }
 
 Game::~Game()
-{
-	glfwTerminate();
-}
+= default;
 
-Player player;
+//Player player;
 
-void Game::Run()
+void Game::run()
 {
 	/*int width, height;
 	glfwGetWindowSize(m_window, &width, &height);
@@ -56,43 +59,59 @@ void Game::Run()
 
 	//Player player;
 
-	player.position = { 0.f, 6.5f, 0.f };
-	player.rotation.y = 120.f;
+	//player.position = { 0.f, 6.5f, 0.f };
+	//player.rotation.y = 120.f;
 
-	m_camera.BindEntity(player);
+	//m_camera.BindEntity(player);
 
-	float lastFrame = static_cast<float>(glfwGetTime());
+	auto lastFrame = glfwGetTime();
 
-	while (!m_window->IsOpen())
+	while (!mWindow->isOpen() && !mStates.empty())
 	{
-		float currentFrame = static_cast<float>(glfwGetTime());
-		float deltaTime = currentFrame - lastFrame;
+		const auto currentFrame = glfwGetTime();
+		const auto deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		player.HandleInput(m_window);
-		player.Update(deltaTime, m_world);
+		auto& state = *mStates.back();
 
-		m_camera.Update();
+		state.update(deltaTime);
+		state.render(mRenderer);
+		mCamera.update();
 
-		m_world.Render(m_renderer, m_camera);
-		/* Render here */
-		m_renderer.Render(m_camera);
-
-		/* Swap front and back buffers */
-		m_window->SwapBuffers();
+		mRenderer.render(*mWindow, mCamera);
 
 		//std::cout << glGetError() << std::endl;
 
 		/* Poll for and process events */
 		glfwPollEvents();
+
+
+		if(mPopState)
+		{
+			mPopState = false;
+			mStates.pop_back();
+		}
 	}
 
 	std::cout << "[INFO/Game] Was fun having you here, see you next time." << std::endl;
-
-	glfwTerminate();
 }
 
-World& Game::GetWorld()
+std::shared_ptr<GameWindow> Game::getWindow() const
 {
-	return m_world;
+	return mWindow;
+}
+
+std::shared_ptr<ResourceManager> Game::getResourceManager() const
+{
+	return mResourceManager;
+}
+
+void Game::popState()
+{
+	mPopState = true;
+}
+
+Camera& Game::getCamera()
+{
+	return mCamera;
 }

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <vector>
 #include <functional>
 #include <glm/vec2.hpp>
 #include <glad/glad.h>
@@ -10,33 +9,39 @@
 class GameWindow
 {
 public:
-	GameWindow(int width, int height, std::string title);
+	GameWindow(int width, int height, const std::string& title);
+	~GameWindow();
 
-	bool Initialized();
+	bool initialized() const;
 
-	bool IsOpen();
-	void SetTitle(std::string title);
-	void SetSize(int width, int height);
+	bool isOpen() const;
+	void setTitle(const std::string& title) const;
+	void setSize(int width, int height) const;
 
-	bool HasFocus();
+	bool hasFocus() const;
 
-	GLFWwindow* GetHandle();
-	glm::ivec2 GetSize();
+	GLFWwindow* getHandle() const;
+	glm::ivec2 getSize() const;
 
-	void SetResizeCallback(std::function<void(glm::vec2)> callback);
-	void SetInputCallback(std::function<void(int, int, int, int)> callback);
+	void setMouseCursorVisible(bool flag) const;
 
-	void SetGLContext();
-	void SwapBuffers();
+	void setResizeCallback(std::function<void(glm::vec2)> callback);
+	void setInputCallback(std::function<void(int, int, int, int)> callback);
+	void setMouseButtonCallback(std::function<void(int, int)> callback);
+
+	void setGLContext() const;
+	void swapBuffers() const;
 
 private:
-	bool m_focused;
-	std::function<void(glm::vec2 size)> m_resizeCb;
-	std::function<void(int key, int scanCode, int action, int mods)> m_inputCb;
+	bool mFocused;
+	std::function<void(glm::vec2 size)> mResizeCb;
+	std::function<void(int key, int scanCode, int action, int mods)> mInputCb;
+	std::function<void(int button, int state)> mMouseCb;
 
-	void OnResize(int width, int height);
-	void OnFocus(bool focussed);
-	void OnInput(int key, int scanCode, int action, int mods);
+	void onResize(int width, int height) const;
+	void onFocus(bool focussed);
+	void onInput(int key, int scanCode, int action, int mods) const;
+	void onMouseButton(int button, int state);
 
-	GLFWwindow* m_handle;
+	GLFWwindow* mHandle;
 };

@@ -1,19 +1,17 @@
-#pragma once
-
+﻿#pragma once
+#include "../GameWindow.h"
 #include "ChunkRenderer.h"
-#include "../Initializable.h"
 
 class ChunkSection;
 class Camera;
+class ResourceManager;
 
-class MainRenderer : public Initializable
+class MainRenderer
 {
 public:
-	void Init() override;
-	void RenderChunk(const ChunkSection& mesh);
-	void Render(Camera& camera);
-
+	void init(const ResourceManager& resourceManager);
+	void renderChunk(ChunkSection& section);
+	void render(const GameWindow& window, const Camera& camera);
 private:
-	ChunkRenderer m_chunkRenderer;
+	ChunkRenderer mChunkRenderer;
 };
-

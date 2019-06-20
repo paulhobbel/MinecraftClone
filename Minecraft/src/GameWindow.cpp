@@ -2,120 +2,156 @@
 
 #include "GameWindow.h"
 
-GameWindow::GameWindow(int width, int height, std::string title)
+GameWindow::GameWindow(int width, int height, const std::string& title)
 {
-	m_handle = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+	if (!glfwInit())
+		exit(EXIT_FAILURE);
+
+	mHandle = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+
+	if (mHandle == nullptr)
+		exit(EXIT_FAILURE);
 
 	// Create pointer to self
-	glfwSetWindowUserPointer(m_handle, this);
+	glfwSetWindowUserPointer(mHandle, this);
 
 	// Set key callback
-	glfwSetKeyCallback(m_handle, [](GLFWwindow * handle, int key, int scanCode, int action, int mods) {
+	glfwSetKeyCallback(mHandle, [](GLFWwindow * handle, int key, int scanCode, int action, int mods) {
 		auto& self = *static_cast<GameWindow*>(glfwGetWindowUserPointer(handle));
 
-		self.OnInput(key, scanCode, action, mods);
+		self.onInput(key, scanCode, action, mods);
 	});
 
-	glfwSetWindowFocusCallback(m_handle, [](GLFWwindow * handle, int flag) {
+	glfwSetMouseButtonCallback(mHandle, [](GLFWwindow* handle, int button, int action, int mods) {
 		auto& self = *static_cast<GameWindow*>(glfwGetWindowUserPointer(handle));
 
-		self.OnFocus(flag == GLFW_TRUE);
+		self.onMouseButton(button, action);
+		});
+
+	glfwSetWindowFocusCallback(mHandle, [](GLFWwindow * handle, int flag) {
+		auto& self = *static_cast<GameWindow*>(glfwGetWindowUserPointer(handle));
+
+		self.onFocus(flag == GLFW_TRUE);
 	});
 
 	// Set resize callback
-	glfwSetWindowSizeCallback(m_handle, [](GLFWwindow* handle, int width, int height) {
+	glfwSetWindowSizeCallback(mHandle, [](GLFWwindow* handle, int width, int height) {
 		auto& self = *static_cast<GameWindow*>(glfwGetWindowUserPointer(handle));
 
-		self.OnResize(width, height);
+		self.onResize(width, height);
 	});
 
 	glfwSetErrorCallback([](int errorCode, const char* description) {
 		std::cout << "[ERROR/GameWindow] code: " << errorCode << ", description: " << description << std::endl;
 	});
 
-	glfwFocusWindow(m_handle);
-	m_focused = true;
+	glfwFocusWindow(mHandle);
+	mFocused = true;
 }
 
-bool GameWindow::Initialized()
+GameWindow::~GameWindow()
 {
-	return m_handle != nullptr;
+	glfwTerminate();
 }
 
-bool GameWindow::IsOpen()
+bool GameWindow::initialized() const
 {
-	return glfwWindowShouldClose(m_handle);
+	return mHandle != nullptr;
 }
 
-void GameWindow::SetTitle(std::string title)
+bool GameWindow::isOpen() const
 {
-	glfwSetWindowTitle(m_handle, title.c_str());
+	return glfwWindowShouldClose(mHandle);
 }
 
-void GameWindow::SetSize(int width, int height)
+void GameWindow::setTitle(const std::string& title) const
 {
-	glfwSetWindowSize(m_handle, width, height);
+	glfwSetWindowTitle(mHandle, title.c_str());
 }
 
-bool GameWindow::HasFocus()
+void GameWindow::setSize(int width, int height) const
 {
-	return m_focused;
+	glfwSetWindowSize(mHandle, width, height);
 }
 
-GLFWwindow* GameWindow::GetHandle()
+bool GameWindow::hasFocus() const
 {
-	return m_handle;
+	return mFocused;
 }
 
-glm::ivec2 GameWindow::GetSize()
+GLFWwindow* GameWindow::getHandle() const
+{
+	return mHandle;
+}
+
+glm::ivec2 GameWindow::getSize() const
 {
 	glm::ivec2 size(0, 0);
-	glfwGetWindowSize(m_handle, &size.x, &size.y);
+	glfwGetWindowSize(mHandle, &size.x, &size.y);
 	return size;
 }
 
-void GameWindow::SetResizeCallback(std::function<void(glm::vec2)> callback)
+void GameWindow::setMouseCursorVisible(bool flag) const
 {
-	m_resizeCb = callback;
+	glfwSetInputMode(mHandle, GLFW_CURSOR, flag ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_HIDDEN);
 }
 
-void GameWindow::SetInputCallback(std::function<void(int key, int scanCode, int action, int mods)> callback)
+void GameWindow::setResizeCallback(std::function<void(glm::vec2)> callback)
 {
-	m_inputCb = callback;
+	mResizeCb = callback;
 }
 
-void GameWindow::SetGLContext()
+void GameWindow::setInputCallback(std::function<void(int key, int scanCode, int action, int mods)> callback)
+{
+	mInputCb = callback;
+}
+
+void GameWindow::setMouseButtonCallback(std::function<void(int, int)> callback)
+{
+	mMouseCb = callback;
+}
+
+void GameWindow::setGLContext() const
 {
 	std::cout << "[INFO/GameWindow] Initializing OpenGL" << std::endl;
-	glfwMakeContextCurrent(m_handle);
-	//gladLoadGL();
-	gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+	glfwMakeContextCurrent(mHandle);
+	gladLoadGL();
+
+	glfwSwapInterval(1);
+
+	//gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
 	std::cout << "[INFO/GameWindow] OpenGL Loaded, using: " << glGetString(GL_VERSION)  << std::endl;
 }
 
-void GameWindow::SwapBuffers()
+void GameWindow::swapBuffers() const
 {
-	glfwSwapBuffers(m_handle);
+	glfwSwapBuffers(mHandle);
 }
 
-void GameWindow::OnResize(int width, int height)
+void GameWindow::onResize(int width, int height) const
 {
 	glViewport(0, 0, width, height);
 
-	if (m_resizeCb)
-		m_resizeCb({ width, height });
+	if (mResizeCb)
+		mResizeCb({ width, height });
 }
 
-void GameWindow::OnFocus(bool focussed)
+void GameWindow::onFocus(bool focussed)
 {
-	m_focused = focussed;
+	mFocused = focussed;
 }
 
-void GameWindow::OnInput(int key, int scanCode, int action, int mods)
+void GameWindow::onInput(int key, int scanCode, int action, int mods) const
 {
 	//std::cout << "[INFO/GameWindow] Got input { key: " << key << ", scanCode: " << scanCode << ", action: " << action << ", mods: " << mods << " }" << std::endl;
 
-	if (m_inputCb)
-		m_inputCb(key, scanCode, action, mods);
+	if (mInputCb)
+		mInputCb(key, scanCode, action, mods);
 
+}
+
+void GameWindow::onMouseButton(int button, int state)
+{
+	if (mMouseCb)
+		mMouseCb(button, state);
 }

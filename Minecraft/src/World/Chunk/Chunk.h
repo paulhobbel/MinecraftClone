@@ -17,27 +17,30 @@ public:
 	Chunk() = default;
 	Chunk(World& world, const glm::ivec2& position);
 
-	Block GetBlock(int x, int y, int z) const noexcept;
-	void SetBlock(int x, int y, int z, Block block);
-	bool IsLoaded() const noexcept;
+	Block getBlock(int x, int y, int z) const noexcept;
+	void setBlock(int x, int y, int z, Block block);
+	bool isLoaded() const noexcept;
 
-	ChunkSection& GetSection(int index);
-	glm::ivec2& GetPosition();
+	std::shared_ptr<ChunkSection> getSection(int index);
+	glm::ivec2& getPosition();
 
-	void Load(TerrainGenerator& generator);
+	void load(TerrainGenerator& generator);
 
-	bool MakeMesh(const Camera& camera);
-	
-	void Render(MainRenderer& renderer, const Camera& camera);
+	bool makeMesh(const Camera& camera);
+
+	void render(MainRenderer& renderer, const Camera& camera);
 
 private:
-	bool OutOfBounds(int x, int y, int z) const noexcept;
+	void addSection();
+	void addSectionsBlockTarget(int blockY);
+	void addSectionsIndexTarget(int index);
+	bool outOfBounds(int x, int y, int z) const noexcept;
 
-	bool m_loaded = false;
+	bool mLoaded = false;
 
-	std::vector<ChunkSection> m_sections;
-	glm::ivec2 m_position;
+	std::vector<std::shared_ptr<ChunkSection>> mSections;
+	glm::ivec2 mPosition;
 
-	World* m_world;
+	World* mWorld;
 };
 

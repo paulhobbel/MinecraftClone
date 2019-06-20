@@ -1,82 +1,86 @@
 #include "ChunkSection.h"
 #include "../World.h"
-#include "../../Util/PositionUtilities.h"
+#include "../../Util/PositionUtil.h"
+#include "../../Renderer/Mesh/ChunkMesh.h"
+#include "../../Constants.h"
 
 ChunkSection::ChunkSection(const glm::ivec3& position, World& world)
-	: m_position(position), m_world(&world), m_aabb({ CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE })
+	: mAabb({CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE}), mPosition(position), mWorld(&world)
 {
-	m_aabb.Update({ position.x * CHUNK_SIZE, position.y * CHUNK_SIZE, position.z * CHUNK_SIZE });
+	mAabb.update({position.x * CHUNK_SIZE, position.y * CHUNK_SIZE, position.z * CHUNK_SIZE});
+	mMesh = std::make_shared<ChunkMesh>();
 }
 
-Block ChunkSection::GetBlock(int x, int y, int z) const noexcept
+Block ChunkSection::getBlock(int x, int y, int z) const noexcept
 {
-	if (OutOfBounds(x) || OutOfBounds(y) || OutOfBounds(z))
+	if (outOfBounds(x) || outOfBounds(y) || outOfBounds(z))
 	{
-		auto worldBlockPos = PositionUtilities::SectionToWorldBlockPosition(m_position, x, y, z);
+		auto worldBlockPos = PositionUtil::sectionToWorldBlockPosition(mPosition, x, y, z);
 
-		return m_world->GetBlock(worldBlockPos.x, worldBlockPos.y, worldBlockPos.z);
+		return mWorld->getBlock(worldBlockPos.x, worldBlockPos.y, worldBlockPos.z);
 	}
 
-	return m_blocks[GetBlockIndex(x, y, z)];
+	return mBlocks[getBlockIndex(x, y, z)];
 }
 
-void ChunkSection::SetBlock(int x, int y, int z, Block block)
+void ChunkSection::setBlock(int x, int y, int z, Block block)
 {
-	if (OutOfBounds(x) || OutOfBounds(y) || OutOfBounds(z))
+	if (outOfBounds(x) || outOfBounds(y) || outOfBounds(z))
 	{
-		auto worldBlockPos = PositionUtilities::SectionToWorldBlockPosition(m_position, x, y, z);
+		auto worldBlockPos = PositionUtil::sectionToWorldBlockPosition(mPosition, x, y, z);
 
-		m_world->SetBlock(worldBlockPos.x, worldBlockPos.y, worldBlockPos.z, block);
+		mWorld->setBlock(worldBlockPos.x, worldBlockPos.y, worldBlockPos.z, block);
 	}
 
-	m_blocks[GetBlockIndex(x, y, z)] = block;
+	mBlocks[getBlockIndex(x, y, z)] = block;
 }
 
-bool ChunkSection::OutOfBounds(int value)
+bool ChunkSection::outOfBounds(int value)
 {
 	return value >= CHUNK_SIZE || value < 0;
 }
 
-ChunkSection& ChunkSection::GetNeighbour(int x, int z)
+ChunkSection& ChunkSection::getNeighbour(int x, int z)
 {
-	return m_world->GetChunkProvider()
-		.GetChunk(m_position.x + x, m_position.z + z)
-		.GetSection(m_position.y);
+	return *mWorld->getChunkProvider()
+		.getChunk(mPosition.x + x, mPosition.z + z)
+		.getSection(mPosition.y);
 }
 
-const glm::ivec3 ChunkSection::GetPosition() const
+glm::ivec3 ChunkSection::getPosition() const
 {
-	return m_position;
+	return mPosition;
 }
 
-bool ChunkSection::HasBuffered()
+bool ChunkSection::hasBuffered()
 {
-	return m_mesh.HasBuffered();
+	return mMesh->hasBuffered();
 }
 
-void ChunkSection::BufferMesh()
+void ChunkSection::bufferMesh()
 {
-	m_mesh.BufferMesh();
+	mMesh->bufferMesh();
+	mMesh->setHasBuffered(true);
 }
 
-bool ChunkSection::HasMesh()
+bool ChunkSection::hasMesh() const
 {
-	return m_hasMesh;
+	return mHasMesh;
 }
 
-void ChunkSection::MakeMesh()
+void ChunkSection::makeMesh()
 {
-	ChunkMeshBuilder(*this, m_mesh).Build();
-	m_mesh.SetHasBuffered(false);
-	m_hasMesh = true;
+	ChunkMesh::Builder(*this, *mMesh).build();
+	mMesh->setHasBuffered(false);
+	mHasMesh = true;
 }
 
-const ChunkMesh& ChunkSection::GetMesh() const
+std::shared_ptr<ChunkMesh> ChunkSection::getMesh() const
 {
-	return m_mesh;
+	return mMesh;
 }
 
-int ChunkSection::GetBlockIndex(int x, int y, int z)
+int ChunkSection::getBlockIndex(int x, int y, int z)
 {
 	return y * CHUNK_AREA + z * CHUNK_SIZE + x;
 }

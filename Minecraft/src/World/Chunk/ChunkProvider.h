@@ -13,20 +13,19 @@ class ChunkProvider
 {
 public:
 	ChunkProvider(World& world);
-	~ChunkProvider();
 
-	std::unordered_map<glm::ivec2, Chunk>& GetChunks();
-	Chunk& GetChunk(int x, int y);
+	std::unordered_map<glm::ivec2, std::shared_ptr<Chunk>>& getChunks();
+	Chunk& getChunk(int x, int y);
 
-	bool MakeMesh(int x, int z, const Camera& camera);
+	bool makeMesh(int x, int z, const Camera& camera);
 
-	bool ChunkExists(int x, int y) const;
-	void LoadChunk(int x, int y);
+	bool chunkExists(int x, int y) const;
+	void loadChunk(int x, int y);
 
 private:
-	World* m_world;
-	TerrainGenerator* m_generator;
+	World* mWorld;
+	TerrainGenerator* mGenerator;
 
-	std::unordered_map<glm::ivec2, Chunk> m_chunks;
+	std::unordered_map<glm::ivec2, std::shared_ptr<Chunk>> mChunks;
 };
 

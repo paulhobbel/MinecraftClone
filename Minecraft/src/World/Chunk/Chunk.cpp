@@ -1,88 +1,83 @@
 #include <glm/vec3.hpp>
 #include "Chunk.h"
-#include "../../Renderer/MainRenderer.h"
-#include "../Generation/Terrain/TerrainGenerator.h"
+#include "../Generation/TerrainGenerator.h"
 #include "../../Camera.h"
+#include "../../Renderer/MainRenderer.h"
+#include "../../Constants.h"
+#include "../World.h"
 
 Chunk::Chunk(World& world, const glm::ivec2& position)
-	: m_world(&world), m_position(position)
+	: mWorld(&world), mPosition(position)
 {
 }
 
-Block Chunk::GetBlock(int x, int y, int z) const noexcept
+Block Chunk::getBlock(int x, int y, int z) const noexcept
 {
-	if (OutOfBounds(x, y, z))
+	if (outOfBounds(x, y, z))
 		return BlockId::Air;
 
-	return m_sections[y / CHUNK_SIZE].GetBlock(x, y % CHUNK_SIZE, z);
+	return mSections[y / CHUNK_SIZE]->getBlock(x, y % CHUNK_SIZE, z);
 }
 
-void Chunk::SetBlock(int x, int y, int z, Block block)
+void Chunk::setBlock(int x, int y, int z, Block block)
 {
 	// Make sure enough sections are made, aka allocation....
-	int sIndex = (y / CHUNK_SIZE) + 1;
+	addSectionsBlockTarget(y);
 
-	while (m_sections.size() < sIndex)
-	{
-		int y = m_sections.size();
-		m_sections.emplace_back(glm::ivec3(m_position.x, y, m_position.y), *m_world);
-	}
-
-	if (OutOfBounds(x, y, z))
+	if (outOfBounds(x, y, z))
 		return;
 
-	m_sections[y / CHUNK_SIZE].SetBlock(x, y % CHUNK_SIZE, z, block);
+	mSections[y / CHUNK_SIZE]->setBlock(x, y % CHUNK_SIZE, z, block);
 }
 
-bool Chunk::IsLoaded() const noexcept
+bool Chunk::isLoaded() const noexcept
 {
-	return m_loaded;
+	return mLoaded;
 }
 
-void Chunk::Load(TerrainGenerator& generator)
+void Chunk::load(TerrainGenerator& generator)
 {
-	if (m_loaded)
+	if (mLoaded)
 		return;
 
-	generator.GenerateTerrain(*this);
+	generator.generateTerrain(*this);
 
-	m_loaded = true;
+	mLoaded = true;
 }
 
-bool Chunk::MakeMesh(const Camera& camera)
+bool Chunk::makeMesh(const Camera& camera)
 {
-	for (auto& section : m_sections)
+	for (auto& section : mSections)
 	{
-		if (!section.HasMesh() && camera.getFrustum().IsBoxInFrustum(section.m_aabb))
+		if (!section->hasMesh() && camera.getFrustum().isBoxInFrustum(section->mAabb))
 		{
 			// Check if mesh wasn't already generated
 			// Check if section is even visible
-			section.MakeMesh();
+			section->makeMesh();
 			return true;
 		}
 	}
 	return false;
 }
 
-void Chunk::Render(MainRenderer& renderer, const Camera& camera)
+void Chunk::render(MainRenderer& renderer, const Camera& camera)
 {
-	for (auto& section : m_sections)
+	for (auto& section : mSections)
 	{
 		// Check if mesh is generated
 		// Check if section is even visible
-
-		if (!section.HasBuffered())
+	
+		if (!section->hasBuffered())
 		{
-			section.BufferMesh();
+			section->bufferMesh();
 		}
-
-		if(camera.getFrustum().IsBoxInFrustum(section.m_aabb))
-			renderer.RenderChunk(section);
-		//renderer.Add(section.GetMesh());
+		
+		if(camera.getFrustum().isBoxInFrustum(section->mAabb))
+			renderer.renderChunk(*section);
 	}
 }
 
-bool Chunk::OutOfBounds(int x, int y, int z) const noexcept
+bool Chunk::outOfBounds(int x, int y, int z) const noexcept
 {
 	if (x >= CHUNK_SIZE || z >= CHUNK_SIZE)
 		return true;
@@ -92,20 +87,43 @@ bool Chunk::OutOfBounds(int x, int y, int z) const noexcept
 	//if (y < 0)
 		return true;
 
-	if (y >= (int)m_sections.size() * CHUNK_SIZE)
+	if (y >= (int)mSections.size() * CHUNK_SIZE)
 		return true;
 
 	return false;
 }
 
-ChunkSection& Chunk::GetSection(int index)
+std::shared_ptr<ChunkSection> Chunk::getSection(int index)
 {
-	// TODO: Add index out of bounds check
+	static auto errorSection = std::make_shared<ChunkSection>(glm::ivec3( 444,444,444 ), *mWorld);
 
-	return m_sections[index];
+	if (index >= (int)mSections.size() || index < 0)
+		return errorSection;
+
+	return mSections[index];
 }
 
-glm::ivec2& Chunk::GetPosition()
+glm::ivec2& Chunk::getPosition()
 {
-	return m_position;
+	return mPosition;
+}
+
+void Chunk::addSection()
+{
+	int y = mSections.size();
+	mSections.emplace_back(std::make_shared<ChunkSection>(glm::ivec3(mPosition.x, y, mPosition.y), *mWorld));
+}
+
+void Chunk::addSectionsBlockTarget(int blockY)
+{
+	int index = blockY / CHUNK_SIZE;
+	addSectionsIndexTarget(index);
+}
+
+void Chunk::addSectionsIndexTarget(int index)
+{
+	while ((int)mSections.size() < index + 1)
+	{
+		addSection();
+	}
 }

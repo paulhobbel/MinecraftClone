@@ -1,26 +1,24 @@
-#pragma once
+﻿#pragma once
+#include "../Camera.h"
+#include "Mesh/ChunkMesh.h"
+#include "Shader/ChunkShader.h"
+#include "Texture/SimpleTexture.h"
 
-#include <vector>
+class ResourceManager;
+class AtlasTexture;
 
-#include "../Shader/ChunkShader.h"
-#include "../Initializable.h"
-
-class Camera;
-class ChunkMesh;
-struct RenderInfo;
-
-class ChunkRenderer : public Initializable
+class ChunkRenderer
 {
 public:
-	ChunkRenderer();
+	void init(const ResourceManager& resourceManager);
 
-	void Init() override;
+	//void compileChunkSection(ChunkSection& )
+	void addMesh(std::shared_ptr<ChunkMesh> mesh);
+	void render(const Camera& camera);
 
-	void AddMesh(const ChunkMesh& mesh);
-	void Render(Camera& camera);
 private:
-	std::vector<const ChunkMesh*> m_chunks;
-
-	ChunkShader m_shader;
+	std::vector<std::shared_ptr<ChunkMesh>> mChunks;
+	ChunkShader mShader;
+	AtlasTexture* mTexture;
+	SimpleTexture testTexture;
 };
-

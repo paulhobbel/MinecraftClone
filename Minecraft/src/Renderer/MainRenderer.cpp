@@ -1,23 +1,18 @@
-#include <iostream>
-#include <glm/gtx/string_cast.hpp>
-
-#include <glad/glad.h>
-
-#include "../Camera.h"
-#include "MainRenderer.h"
+﻿#include "MainRenderer.h"
 #include "../World/Chunk/ChunkSection.h"
+#include "../Resources/ResourceManager.h"
 
-void MainRenderer::Init()
+void MainRenderer::init(const ResourceManager& resourceManager)
 {
-	m_chunkRenderer.Init();
+	mChunkRenderer.init(resourceManager);
 }
 
-void MainRenderer::RenderChunk(const ChunkSection& section)
+void MainRenderer::renderChunk(ChunkSection& section)
 {
-	m_chunkRenderer.AddMesh(section.GetMesh());
+	mChunkRenderer.addMesh(section.getMesh());
 }
 
-void MainRenderer::Render(Camera& camera)
+void MainRenderer::render(const GameWindow& window, const Camera& camera)
 {
 	glClearColor(.1f, .5f, 1.f, 1.f);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
@@ -28,5 +23,7 @@ void MainRenderer::Render(Camera& camera)
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
-	m_chunkRenderer.Render(camera);
+	mChunkRenderer.render(camera);
+
+	window.swapBuffers();
 }

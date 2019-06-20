@@ -1,9 +1,12 @@
 #pragma once
 
-#include "Camera.h"
+#include <vector>
+#include <memory>
 #include "GameWindow.h"
-#include "Renderer/MainRenderer.h"
-#include "World/World.h"
+#include "States/GameState.h"
+#include "Resources/ResourceManager.h"
+
+#include "Camera.h"
 
 class Game
 {
@@ -11,15 +14,34 @@ public:
 	Game();
 	~Game();
 
-	void Run();
-	World& GetWorld();
+	void run();
+
+	std::shared_ptr<GameWindow> getWindow() const;
+	std::shared_ptr<ResourceManager> getResourceManager() const;
+
+	template<typename T, typename... Args>
+	void pushState(Args&& ... args)
+	{
+		mStates.push_back(std::make_unique<T>(std::forward<Args>(args)...));
+		auto& s = *mStates.back();
+		s.onOpen();
+	}
+
+	void popState();
+
+	Camera& getCamera();
+	//World& GetWorld();
 
 private:
-	GameWindow* m_window = nullptr;
+	bool mPopState = { false };
 
-	Camera m_camera;
-	World m_world;
+	std::shared_ptr<GameWindow> mWindow;
+	std::shared_ptr<ResourceManager> mResourceManager;
 
-	MainRenderer m_renderer;
+	std::vector<std::unique_ptr<GameState>> mStates;
+
+	Camera mCamera;
+
+	MainRenderer mRenderer;
 };
 

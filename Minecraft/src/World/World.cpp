@@ -1,64 +1,128 @@
 #include <iostream>
 #include <future>
 
-#include <glm/vec3.hpp>
 #include <glm/ext.hpp>
-#include <glm/gtx/string_cast.hpp>
 
 #include "World.h"
-#include "../Renderer/MainRenderer.h"
 #include "../Camera.h"
 
-#include "../Util/PositionUtilities.h"
+#include "../Util/PositionUtil.h"
+#include "../Constants.h"
+#include "../Renderer/MainRenderer.h"
 
-std::thread chunkThread;
-World::World(const Camera& camera) : m_chunkProvider(*this)
+World::World(const Camera& camera) : mChunkProvider(*this)
 {
 	std::cout << "[INFO/World] Loading world..." << std::endl;
 	for (int i = 0; i < 2; i++)
 	{
-		m_chunkThreads.emplace_back([&]()
+		mChunkThreads.emplace_back([&]()
 			{
+				std::this_thread::sleep_for(std::chrono::milliseconds(50));
 				std::cout << "[DEBUG/World/Loader_Thread] Started async chunk loader." << std::endl;
-				LoadChunks(camera);
+				loadChunks(camera);
 			});
 	}
 }
 
 World::~World()
 {
-	std::cout << "[INFO/World] Shutting down current world, waiting for " << m_chunkThreads.size() << " threads to close..." << std::endl;
-	m_running = false;
-	for (auto& thread : m_chunkThreads)
+	std::cout << "[INFO/World] Shutting down current world, waiting for " << mChunkThreads.size() << " threads to close..." << std::endl;
+	mRunning = false;
+	for (auto& thread : mChunkThreads)
 	{
 		thread.join();
 	}
 }
 
-void World::SetBlock(int x, int y, int z, Block block)
+void World::setBlock(int x, int y, int z, Block block)
 {
-	auto chunkPos = PositionUtilities::WorldToChunkPosition(x, y, z);
-	auto blockPos = PositionUtilities::WorldToBlockPosition(x, y, z);
+	auto chunkPos = PositionUtil::worldToChunkPosition(x, y, z);
+	auto blockPos = PositionUtil::worldToBlockPosition(x, y, z);
 
-	m_chunkProvider.GetChunk(chunkPos.x, chunkPos.z).SetBlock(blockPos.x, blockPos.y, blockPos.z, block);
+	mChunkProvider.getChunk(chunkPos.x, chunkPos.z).setBlock(blockPos.x, blockPos.y, blockPos.z, block);
 }
 
-Block World::GetBlock(int x, int y, int z)
+Block World::getBlock(int x, int y, int z)
 {
-	auto chunkPos = PositionUtilities::WorldToChunkPosition(x, y, z);
-	auto blockPos = PositionUtilities::WorldToBlockPosition(x, y, z);
+	auto chunkPos = PositionUtil::worldToChunkPosition(x, y, z);
+	auto blockPos = PositionUtil::worldToBlockPosition(x, y, z);
 
-	return m_chunkProvider.GetChunk(chunkPos.x, chunkPos.z).GetBlock(blockPos.x, blockPos.y, blockPos.z);
+	return mChunkProvider.getChunk(chunkPos.x, chunkPos.z).getBlock(blockPos.x, blockPos.y, blockPos.z);
 }
 
-void World::Render(MainRenderer& renderer, const Camera& camera)
+void World::update(const Camera& camera)
 {
-	std::unique_lock<std::mutex> lock(m_mainMutex);
-
-	auto& chunks = m_chunkProvider.GetChunks();
-	for (auto iterator = chunks.begin(); iterator != chunks.end();)
+	for(auto& event : mEvents)
 	{
-		Chunk& chunk = iterator->second;
+		event->handle(*this);
+	}
+
+	mEvents.clear();
+
+	updateChunks();
+}
+
+void World::updateChunk(int blockX, int blockY, int blockZ)
+{
+	std::unique_lock<std::mutex> lock(mMainMutex);
+
+	auto addChunkToUpdateBatch = [&](const glm::ivec3& key, std::shared_ptr<ChunkSection> section)
+	{
+		mChunkUpdates.emplace(key, section);
+	};
+
+	auto chunkPosition = PositionUtil::worldToChunkPosition(blockX, blockY, blockZ);
+	auto chunkSectionY = blockY / CHUNK_SIZE;
+
+	glm::ivec3 key(chunkPosition.x, chunkSectionY, chunkPosition.z);
+	addChunkToUpdateBatch(key, mChunkProvider.getChunk(chunkPosition.x, chunkPosition.z).getSection(chunkSectionY));
+	//mChunkUpdates.emplace(key, mChunkProvider.getChunk(chunkPosition.x, chunkPosition.z).getSection(chunkSectionY));
+
+	auto sectionBlockXZ = PositionUtil::worldToBlockPosition(blockX, blockY, blockZ);
+	auto sectionBlockY = blockY % CHUNK_SIZE;
+
+	if (sectionBlockXZ.x == 0)
+	{
+		glm::ivec3 newKey(chunkPosition.x - 1, chunkSectionY, chunkPosition.z);
+		addChunkToUpdateBatch(newKey, mChunkProvider.getChunk(newKey.x, newKey.z).getSection(newKey.y));
+	}
+	else if (sectionBlockXZ.x == CHUNK_SIZE - 1)
+	{
+		glm::ivec3 newKey(chunkPosition.x + 1, chunkSectionY, chunkPosition.z);
+		addChunkToUpdateBatch(newKey, mChunkProvider.getChunk(newKey.x, newKey.z).getSection(newKey.y));
+	}
+
+	if (sectionBlockY == 0)
+	{
+		glm::ivec3 newKey(chunkPosition.x, chunkSectionY - 1, chunkPosition.z);
+		addChunkToUpdateBatch(newKey, mChunkProvider.getChunk(newKey.x, newKey.z).getSection(newKey.y));
+	}
+	else if (sectionBlockY == CHUNK_SIZE - 1)
+	{
+		glm::ivec3 newKey(chunkPosition.x, chunkSectionY + 1, chunkPosition.z);
+		addChunkToUpdateBatch(newKey, mChunkProvider.getChunk(newKey.x, newKey.z).getSection(newKey.y));
+	}
+
+	if (sectionBlockXZ.z == 0)
+	{
+		glm::ivec3 newKey(chunkPosition.x, chunkSectionY, chunkPosition.z - 1);
+		addChunkToUpdateBatch(newKey, mChunkProvider.getChunk(newKey.x, newKey.z).getSection(newKey.y));
+	}
+	else if (sectionBlockXZ.z == CHUNK_SIZE - 1)
+	{
+		glm::ivec3 newKey(chunkPosition.x, chunkSectionY, chunkPosition.z + 1);
+		addChunkToUpdateBatch(newKey, mChunkProvider.getChunk(newKey.x, newKey.z).getSection(newKey.y));
+	}
+}
+
+void World::render(MainRenderer& renderer, const Camera& camera)
+{
+	std::unique_lock<std::mutex> lock(mMainMutex);
+
+	auto& chunks = mChunkProvider.getChunks();
+	for (auto iterator = chunks.begin(); iterator != chunks.end(); ++iterator)
+	{
+		auto chunk = iterator->second;
 		//std::cout << "[DEBUG/World] Rendering chunk:" << glm::to_string(chunk.GetPosition()) << std::endl;
 
 		int cameraX = camera.position.x;
@@ -69,7 +133,7 @@ void World::Render(MainRenderer& renderer, const Camera& camera)
 		int maxX = (cameraX / CHUNK_SIZE) + 12;
 		int maxZ = (cameraZ / CHUNK_SIZE) + 12;
 
-		auto location = chunk.GetPosition();
+		auto location = chunk->getPosition();
 
 		/*if (minX > location.x ||
 			minZ > location.y ||
@@ -81,22 +145,21 @@ void World::Render(MainRenderer& renderer, const Camera& camera)
 		}*/
 		//else
 		//{
-			chunk.Render(renderer, camera);
-			iterator++;
+		chunk->render(renderer, camera);
 		//}
 		//renderer.RenderChunk(chunk);
 	}
 }
 
-ChunkProvider& World::GetChunkProvider()
+ChunkProvider& World::getChunkProvider()
 {
-	return m_chunkProvider;
+	return mChunkProvider;
 }
 
 int loadDistance = 2;
-void World::LoadChunks(const Camera& camera)
+void World::loadChunks(const Camera& camera)
 {
-	while (m_running)
+	while (mRunning)
 	{
 		bool isMeshMade = false;
 		int cameraX = static_cast<int>(camera.position.x) / CHUNK_SIZE;
@@ -118,8 +181,8 @@ void World::LoadChunks(const Camera& camera)
 			{
 				for (int z = minZ; z < maxZ; ++z)
 				{
-					std::unique_lock<std::mutex> lock(m_mainMutex);
-					isMeshMade = m_chunkProvider.MakeMesh(x, z, camera);
+					std::unique_lock<std::mutex> lock(mMainMutex);
+					isMeshMade = mChunkProvider.makeMesh(x, z, camera);
 
 					//if (isMeshMade)
 					//	break;
@@ -136,7 +199,19 @@ void World::LoadChunks(const Camera& camera)
 		if (!isMeshMade)
 			loadDistance++;
 
-		if (loadDistance > 12)
+		if (loadDistance > 5)
 			loadDistance = 2;
 	}
+}
+
+void World::updateChunks()
+{
+	std::unique_lock<std::mutex> lock(mMainMutex);
+	for (auto& c : mChunkUpdates)
+	{
+		auto s = c.second;
+		s->makeMesh();
+		s->getMesh()->setHasBuffered(false);
+	}
+	mChunkUpdates.clear();
 }

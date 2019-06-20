@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "Chunk/ChunkProvider.h"
+#include "Event/IWorldEvent.h"
 
 struct Block;
 class MainRenderer;
@@ -17,28 +18,34 @@ public:
 	World(const Camera& camera);
 	~World();
 
-	void SetBlock(int x, int y, int z, Block block);
-	Block GetBlock(int x, int y, int z);
+	void setBlock(int x, int y, int z, Block block);
+	Block getBlock(int x, int y, int z);
 
-	void Update(const Camera& camera);
-	void UpdateChunk(int x, int y, int z);
+	void update(const Camera& camera);
+	void updateChunk(int x, int y, int z);
 
-	void Render(MainRenderer& renderer, const Camera& camera);
+	void render(MainRenderer& renderer, const Camera& camera);
 
-	ChunkProvider& GetChunkProvider();
+	ChunkProvider& getChunkProvider();
+
+	template<typename T, typename... Args>
+	void addEvent(Args&& ... args)
+	{
+		mEvents.push_back(std::make_unique<T>(std::forward<Args>(args)...));
+	}
 
 private:
-	void LoadChunks(const Camera& camera);
-	void UpdateChunks();
+	void loadChunks(const Camera& camera);
+	void updateChunks();
 
-	ChunkProvider m_chunkProvider;
+	std::vector<std::unique_ptr<IWorldEvent>> mEvents;
+	std::unordered_map<glm::ivec3, std::shared_ptr<ChunkSection>> mChunkUpdates;
 
-	std::atomic<bool> m_running{ true };
-	std::vector<std::thread> m_chunkThreads;
+	ChunkProvider mChunkProvider;
 
-	std::thread m_TestThread;
-	
-	std::mutex m_mainMutex;
-	std::mutex m_geneMutex;
+	std::atomic<bool> mRunning{ true };
+	std::vector<std::thread> mChunkThreads;
+
+	std::mutex mMainMutex;
 };
 

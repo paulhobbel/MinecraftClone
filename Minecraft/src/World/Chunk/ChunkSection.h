@@ -3,11 +3,10 @@
 #include <array>
 #include <glm/vec3.hpp>
 
-#include "ChunkMesh.h"
-#include "ChunkMeshBuilder.h"
 #include "../Block/Block.h"
 
-#include "../../Util/AABB.h"
+#include "../../AABB.h"
+#include "../../Renderer/Mesh/ChunkMesh.h"
 #include "../../Constants.h"
 
 class World;
@@ -18,34 +17,37 @@ class ChunkSection
 public:
 	ChunkSection(const glm::ivec3& position, World& world);
 
-	Block GetBlock(int x, int y, int z) const noexcept;
-	void SetBlock(int x, int y, int z, Block block);
+	Block getBlock(int x, int y, int z) const noexcept;
+	void setBlock(int x, int y, int z, Block block);
 
-	ChunkSection& GetNeighbour(int x, int z);
+	ChunkSection& getNeighbour(int x, int z);
 
-	const glm::ivec3 GetPosition() const;
+	glm::ivec3 getPosition() const;
 
-	bool HasBuffered();
-	void BufferMesh();
+	bool hasBuffered();
+	void bufferMesh();
 
-	bool HasMesh();
-	void MakeMesh();
-	const ChunkMesh& GetMesh() const;
+	bool hasMesh() const;
+	void makeMesh();
+	std::shared_ptr<ChunkMesh> getMesh() const;
 
-	const Block* Begin() { return &m_blocks[0]; }
+	const Block* begin() { return &mBlocks[0]; }
+	//std::array<Block, CHUNK_VOLUME> getBlocks();
 
 private:
 
-	static bool OutOfBounds(int value);
-	static int GetBlockIndex(int x, int y, int z);
+	static bool outOfBounds(int value);
+	static int getBlockIndex(int x, int y, int z);
 
-	bool m_hasMesh = false;
+	AABB mAabb;
+	glm::ivec3 mPosition;
 
-	AABB m_aabb;
-	glm::ivec3 m_position;
+	std::array<Block, CHUNK_VOLUME> mBlocks;
+		//std::array<Block, CHUNK_VOLUME> mBlocks;
 
-	std::array<Block, CHUNK_VOLUME> m_blocks;
+	bool mHasMesh = false;
+	//ChunkMesh mMesh;
+	std::shared_ptr<ChunkMesh> mMesh;
 
-	ChunkMesh m_mesh;
-	World* m_world;
+	World* mWorld;
 };
