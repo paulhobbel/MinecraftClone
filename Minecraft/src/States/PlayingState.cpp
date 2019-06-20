@@ -19,6 +19,8 @@ void PlayingState::update(double deltaTime)
 
 	static Stopwatch stopwatch;
 
+	glm::vec3 lastPosition;
+
 	for (Ray ray({ mPlayer.position.x, mPlayer.position.y + 0.6f, mPlayer.position.z }, mPlayer.rotation);
 		ray.getLength() < 6;
 		ray.step(0.05))
@@ -33,9 +35,20 @@ void PlayingState::update(double deltaTime)
 			{
 				stopwatch.start();
 				if (Mouse::isButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
-					mWorld.addEvent<PlayerDigEvent>(mPlayer, ray.getEnd());
+				{
+					mWorld.addEvent<PlayerDigEvent>(mPlayer, ray.getEnd(), BlockId::Air);
+					break;
+				}
+
+				else if (Mouse::isButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
+				{
+					//stopwatch.start();
+					mWorld.addEvent<PlayerDigEvent>(mPlayer, lastPosition, BlockId::WhiteWool);
+					break;
+				}
 			}
 		}
+		lastPosition = ray.getEnd();
 	}
 
 	mPlayer.update(deltaTime, mWorld);
