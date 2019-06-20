@@ -13,6 +13,16 @@ GLuint BaseTexture::getId()
 	return mId;
 }
 
+void BaseTexture::upload()
+{
+}
+
+void BaseTexture::bind() const
+{
+	glBindTexture(GL_TEXTURE_2D, mId);
+}
+
+
 void BaseTexture::dispose()
 {
 	if (mId != 0)

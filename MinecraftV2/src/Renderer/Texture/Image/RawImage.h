@@ -8,7 +8,7 @@ class RawImage
 {
 public:
 	static RawImage* allocImage(int width, int height);
-	static RawImage* loadImage(std::string& fileName);
+	static RawImage* loadImage(const std::string fileName);
 	
 	RawImage();
 	RawImage(ImageSizeInfo info);
@@ -19,9 +19,9 @@ public:
 
 	int getWidth() const;
 	int getHeight() const;
-	const uint32_t* getBitmap() const;
+	const unsigned char* getBitmap() const;
 	ImageSizeInfo getInfo() const;
 private:
 	ImageSizeInfo mInfo;
-	uint32_t* mData;
+	unsigned char* mData;
 };

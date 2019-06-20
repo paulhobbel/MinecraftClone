@@ -116,6 +116,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)deps/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -124,53 +125,113 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\AABB.cpp" />
+    <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\GameWindow.cpp" />
+    <ClCompile Include="src\Input\Keyboard.cpp" />
+    <ClCompile Include="src\Input\Mouse.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Renderer\ChunkRenderer.cpp" />
     <ClCompile Include="src\Renderer\GLResource.cpp" />
-    <ClCompile Include="src\Renderer\Shader.cpp" />
+    <ClCompile Include="src\Renderer\MainRenderer.cpp" />
+    <ClCompile Include="src\Renderer\Mesh\ChunkMesh.cpp" />
+    <ClCompile Include="src\Renderer\Mesh\Mesh.cpp" />
+    <ClCompile Include="src\Renderer\Shader\ChunkShader.cpp" />
+    <ClCompile Include="src\Renderer\Shader\Shader.cpp" />
     <ClCompile Include="src\Renderer\Texture\AtlasTexture.cpp" />
     <ClCompile Include="src\Renderer\Texture\BaseTexture.cpp" />
     <ClCompile Include="src\Renderer\Texture\Image\ImageSizeInfo.h" />
     <ClCompile Include="src\Renderer\Texture\Image\RawImage.cpp" />
+    <ClCompile Include="src\Renderer\Texture\SimpleTexture.cpp" />
     <ClCompile Include="src\Renderer\Texture\TextureAtlasSprite.cpp" />
-    <ClCompile Include="src\Renderer\Texture\TextureMap.cpp" />
-    <ClCompile Include="src\ResourceLoader.cpp" />
+    <ClCompile Include="src\Resources\ResourceManager.cpp" />
     <ClCompile Include="src\Resources\BlockPart.cpp" />
     <ClCompile Include="src\Resources\BlockPartFace.cpp" />
     <ClCompile Include="src\Resources\ModelBlock.cpp" />
+    <ClCompile Include="src\States\GameState.cpp" />
+    <ClCompile Include="src\States\LoadingState.cpp" />
+    <ClCompile Include="src\States\PlayingState.cpp" />
     <ClCompile Include="src\Util\FileUtil.cpp" />
+    <ClCompile Include="src\Util\PositionUtil.cpp" />
     <ClCompile Include="src\Util\Stopwatch.cpp" />
+    <ClCompile Include="src\ViewFrustum.cpp" />
+    <ClCompile Include="src\World\Block\Block.cpp" />
+    <ClCompile Include="src\World\Block\BlockData.cpp" />
+    <ClCompile Include="src\World\Block\BlockFace.cpp" />
+    <ClCompile Include="src\World\Block\BlockRegistry.cpp" />
+    <ClCompile Include="src\World\Chunk\Chunk.cpp" />
+    <ClCompile Include="src\World\Chunk\ChunkProvider.cpp" />
+    <ClCompile Include="src\World\Chunk\ChunkSection.cpp" />
+    <ClCompile Include="src\World\Entity\Player.cpp" />
+    <ClCompile Include="src\World\Generation\FlatTerrainGenerator.cpp" />
+    <ClCompile Include="src\World\World.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="deps\include\stb_image.h" />
-    <ClInclude Include="deps\include\stb_image_write.h" />
     <ClInclude Include="deps\include\stb_rect_pack.h" />
+    <ClInclude Include="src\AABB.h" />
+    <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\Constants.h" />
+    <ClInclude Include="src\Entity.h" />
+    <ClInclude Include="src\Game.h" />
+    <ClInclude Include="src\GameWindow.h" />
+    <ClInclude Include="src\Input\Keyboard.h" />
+    <ClInclude Include="src\Input\Mouse.h" />
+    <ClInclude Include="src\Renderer\ChunkRenderer.h" />
     <ClInclude Include="src\Renderer\GLResource.h" />
-    <ClInclude Include="src\Renderer\Shader.h" />
+    <ClInclude Include="src\Renderer\MainRenderer.h" />
+    <ClInclude Include="src\Renderer\Mesh\ChunkMesh.h" />
+    <ClInclude Include="src\Renderer\Mesh\Mesh.h" />
+    <ClInclude Include="src\Renderer\Shader\ChunkShader.h" />
+    <ClInclude Include="src\Renderer\Shader\Shader.h" />
     <ClInclude Include="src\Renderer\Texture\AtlasTexture.h" />
     <ClInclude Include="src\Renderer\Texture\BaseTexture.h" />
     <ClInclude Include="src\Renderer\Texture\Image\RawImage.h" />
+    <ClInclude Include="src\Renderer\Texture\SimpleTexture.h" />
     <ClInclude Include="src\Renderer\Texture\TextureAtlasSprite.h" />
-    <ClInclude Include="src\Renderer\Texture\TextureMap.h" />
-    <ClInclude Include="src\ResourceLoader.h" />
+    <ClInclude Include="src\Resources\ResourceManager.h" />
     <ClInclude Include="src\Resources\BlockPart.h" />
     <ClInclude Include="src\Resources\BlockPartFace.h" />
     <ClInclude Include="src\Resources\ModelBlock.h" />
+    <ClInclude Include="src\States\GameState.h" />
+    <ClInclude Include="src\States\LoadingState.h" />
+    <ClInclude Include="src\States\PlayingState.h" />
     <ClInclude Include="src\Util\FileUtil.h" />
+    <ClInclude Include="src\Util\PositionUtil.h" />
     <ClInclude Include="src\Util\Stopwatch.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="res\models\block\cube_top.json" />
-    <None Include="res\models\block\grass.json" />
-    <None Include="res\models\block\stone.json" />
-    <None Include="res\models\block\cube.json" />
-    <None Include="res\models\block\cube_all.json" />
-    <None Include="res\models\block\dirt.json" />
+    <ClInclude Include="src\ViewFrustum.h" />
+    <ClInclude Include="src\World\Block\Block.h" />
+    <ClInclude Include="src\World\Block\BlockData.h" />
+    <ClInclude Include="src\World\Block\BlockFace.h" />
+    <ClInclude Include="src\World\Block\BlockId.h" />
+    <ClInclude Include="src\World\Block\BlockRegistry.h" />
+    <ClInclude Include="src\World\Chunk\Chunk.h" />
+    <ClInclude Include="src\World\Chunk\ChunkProvider.h" />
+    <ClInclude Include="src\World\Chunk\ChunkSection.h" />
+    <ClInclude Include="src\World\Entity\Player.h" />
+    <ClInclude Include="src\World\Generation\FlatTerrainGenerator.h" />
+    <ClInclude Include="src\World\Generation\TerrainGenerator.h" />
+    <ClInclude Include="src\World\World.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\blocks\dirt.png" />
     <Image Include="res\textures\blocks\grass_side.png" />
     <Image Include="res\textures\blocks\grass_top.png" />
     <Image Include="res\textures\blocks\stone.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\models\block\cube.json" />
+    <None Include="res\models\block\cube_all.json" />
+    <None Include="res\models\block\cube_column.json" />
+    <None Include="res\models\block\cube_top.json" />
+    <None Include="res\models\block\dirt.json" />
+    <None Include="res\models\block\grass.json" />
+    <None Include="res\models\block\oak_log.json" />
+    <None Include="res\models\block\stone.json" />
+    <None Include="res\models\block\white_wool.json" />
+    <None Include="res\shaders\Chunk.frag" />
+    <None Include="res\shaders\Chunk.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -7,11 +7,11 @@
 
 #include "BlockPart.h"
 
-class ResourceLoader;
+class ResourceManager;
 
 class ModelBlock
 {
-	friend class ResourceLoader;
+	friend class ResourceManager;
 public:
 	std::string id;
 	std::string parentLocation;
@@ -35,7 +35,7 @@ public:
 	}
 
 protected:
-	ModelBlock* mParent = nullptr;
+	std::shared_ptr<ModelBlock> mParent = nullptr;
 
 private:
 	struct LookupRegistry

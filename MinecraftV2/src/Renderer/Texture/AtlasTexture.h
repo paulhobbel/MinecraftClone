@@ -2,53 +2,39 @@
 
 #include <map>
 #include <string>
-#include <vector>
+#include <memory>
 #include <stb_rect_pack.h>
 
 #include "BaseTexture.h"
 #include "TextureAtlasSprite.h"
 
-
-#define MAX_SPRITES 256
-
 class AtlasTexture final : public BaseTexture
 {
 public:
-	TextureAtlasSprite& registerSprite(std::string& location);
-	void compile();
-	void reset();
+	std::shared_ptr<TextureAtlasSprite> registerSprite(const std::string& location);
+	std::weak_ptr<TextureAtlasSprite> getSprite(std::string& location);
+
+	void stitch();
+	void upload() override;
+
 private:
-
-	class AtlasImpl
+	struct AtlasContext
 	{
-	public:
-		enum AtlasStatus
-		{
-			ATLAS_IMPL_PENDING,
-			ATLAS_IMPL_DONE,
-			ATLAS_IMPL_SMALL
-		};
+		stbrp_context context{};
+		stbrp_node* nodes;
+		stbrp_rect* rects;
 
-		AtlasImpl();
-		~AtlasImpl();
+		int numRects;
 
-		AtlasStatus getStatus() const;
-
-		void addImage(RawImage* image);
-		bool packImages();
-		bool compile();
-
-	private:
-		AtlasStatus mStatus = ATLAS_IMPL_PENDING;
-
-		std::vector<RawImage*> mImages;
-
-		ImageSizeInfo mAtlasInfo;
-		RawImage* mAtlasImage = nullptr;
-		stbrp_node* mNodes;
-		stbrp_rect* mRects;
+		bool allocated = false;
+		int width = 0;
+		int height = 0;
 	};
 
+	void packSprites(std::map<int, std::weak_ptr<TextureAtlasSprite>>& rectToSpriteMap);
+	void allocAtlas();
+	void linkSprites(std::map<int, std::weak_ptr<TextureAtlasSprite>> rectToSpriteMap) const;
 
-	std::map<std::string, TextureAtlasSprite*> mRegisteredSprites;
+	AtlasContext mContext{};
+	std::map<std::string, std::shared_ptr<TextureAtlasSprite>> mSprites;
 };

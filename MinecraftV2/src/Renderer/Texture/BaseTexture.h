@@ -10,6 +10,10 @@ public:
 
 	GLuint getId();
 
+	virtual void upload();
+
+	void bind() const;
+
 	void dispose() override;
 protected:
 	GLuint mId = 0;
