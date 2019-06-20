@@ -1,3 +1,6 @@
+#include <iostream>
+#include <glm/gtx/string_cast.hpp>
+
 #include <glad/glad.h>
 
 #include "../Camera.h"
@@ -11,8 +14,7 @@ void MainRenderer::Init()
 
 void MainRenderer::RenderChunk(const ChunkSection& section)
 {
-	const auto& mesh = section.GetMesh();
-	m_chunkRenderer.AddMesh(mesh);
+	m_chunkRenderer.AddMesh(section.GetMesh());
 }
 
 void MainRenderer::Render(Camera& camera)

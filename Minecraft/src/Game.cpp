@@ -10,6 +10,8 @@
 
 Game::Game() : m_world(m_camera)
 {
+	std::cout << "[INFO/Game] Initializing game..." << std::endl;
+
 	if (!glfwInit())
 		exit(EXIT_FAILURE);
 	
@@ -27,13 +29,6 @@ Game::Game() : m_world(m_camera)
 	// Initialize everything that needs opengl
 	m_renderer.Init();
 
-	//m_camera.position.x = -5;
-	m_camera.position.y = 1.5;
-	m_camera.position.z = 3.5;
-	//m_camera.rotation.y = 0;
-	//m_camera.rotation.x = 5;
-	//m_camera.rotation.z = 45;
-
 	m_window->SetResizeCallback([this](glm::vec2 windowSize) {
 		m_camera.SetPerspective(windowSize);
 	});
@@ -41,6 +36,8 @@ Game::Game() : m_world(m_camera)
 	m_window->SetInputCallback([this](int key, int scanCode, int action, int mods) {
 		Keyboard::UpdateKey(key, action);
 	});
+
+	std::cout << "[INFO/Game] Done Initializing" << std::endl;
 }
 
 Game::~Game()
@@ -58,7 +55,9 @@ void Game::Run()
 	glViewport(0, 0, width, height);*/
 
 	//Player player;
-	player.position = { 0, 1.5f, 3.5f };
+
+	player.position = { 0.f, 6.5f, 0.f };
+	player.rotation.y = 120.f;
 
 	m_camera.BindEntity(player);
 
@@ -87,6 +86,8 @@ void Game::Run()
 		/* Poll for and process events */
 		glfwPollEvents();
 	}
+
+	std::cout << "[INFO/Game] Was fun having you here, see you next time." << std::endl;
 
 	glfwTerminate();
 }

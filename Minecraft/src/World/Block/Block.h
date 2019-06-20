@@ -2,6 +2,8 @@
 
 #include "BlockId.h"
 
+class BlockData;
+
 struct Block
 {
 	Block() = default;

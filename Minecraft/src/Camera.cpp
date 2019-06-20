@@ -6,6 +6,7 @@
 #include "GameWindow.h"
 #include "Keyboard.h"
 #include "Mouse.h"
+#include "Constants.h"
 
 Camera::Camera()
 {
@@ -29,7 +30,7 @@ void Camera::Update() noexcept
 	position = { m_entity->position.x, m_entity->position.y + 0.6f, m_entity->position.z };
 	rotation = m_entity->rotation;
 
-	//std::cout << "position: " << glm::to_string(position) << ", rotation: " << glm::to_string(rotation) << std::endl;
+	//std::cout << "Chunk: " << position.x / CHUNK_SIZE << " " << position.z / CHUNK_SIZE << ", Position: " << glm::to_string(position) << ", rotation: " << glm::to_string(rotation) << std::endl;
 
 	m_viewMatrix = glm::mat4(1.f);
 
@@ -40,6 +41,8 @@ void Camera::Update() noexcept
 	m_viewMatrix = glm::translate(m_viewMatrix, -position);
 
 	m_projViewMatrix = m_projectionMatrix * m_viewMatrix;
+
+	m_frustum.Update(m_projViewMatrix);
 }
 
 glm::mat4& Camera::getProjectionMatrix()
@@ -55,4 +58,9 @@ glm::mat4& Camera::getViewMatrix()
 glm::mat4& Camera::getProjectionViewMatrix()
 {
 	return m_projViewMatrix;
+}
+
+const ViewFrustum& Camera::getFrustum() const noexcept
+{
+	return m_frustum;
 }
