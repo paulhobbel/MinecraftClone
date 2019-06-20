@@ -8,6 +8,7 @@ ChunkSection::ChunkSection(const glm::ivec3& position, World& world)
 	: mAabb({CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE}), mPosition(position), mWorld(&world)
 {
 	mAabb.update({position.x * CHUNK_SIZE, position.y * CHUNK_SIZE, position.z * CHUNK_SIZE});
+	mMesh = std::make_shared<ChunkMesh>();
 }
 
 Block ChunkSection::getBlock(int x, int y, int z) const noexcept
@@ -41,7 +42,7 @@ bool ChunkSection::outOfBounds(int value)
 
 ChunkSection& ChunkSection::getNeighbour(int x, int z)
 {
-	return mWorld->getChunkProvider()
+	return *mWorld->getChunkProvider()
 		.getChunk(mPosition.x + x, mPosition.z + z)
 		.getSection(mPosition.y);
 }
@@ -53,28 +54,28 @@ glm::ivec3 ChunkSection::getPosition() const
 
 bool ChunkSection::hasBuffered()
 {
-	return mMesh.hasBuffered();
+	return mMesh->hasBuffered();
 }
 
 void ChunkSection::bufferMesh()
 {
-	mMesh.bufferMesh();
-	mMesh.setHasBuffered(true);
+	mMesh->bufferMesh();
+	mMesh->setHasBuffered(true);
 }
 
-bool ChunkSection::hasMesh()
+bool ChunkSection::hasMesh() const
 {
 	return mHasMesh;
 }
 
 void ChunkSection::makeMesh()
 {
-	ChunkMesh::Builder(*this, mMesh).build();
-	mMesh.setHasBuffered(false);
+	ChunkMesh::Builder(*this, *mMesh).build();
+	mMesh->setHasBuffered(false);
 	mHasMesh = true;
 }
 
-const ChunkMesh& ChunkSection::getMesh()
+std::shared_ptr<ChunkMesh> ChunkSection::getMesh() const
 {
 	return mMesh;
 }

@@ -55,6 +55,12 @@ bool ChunkMesh::hasBuffered() const
 	return mBuffered;
 }
 
+void ChunkMesh::release()
+{
+	Mesh::release();
+	mIndiceIndex = 0;
+}
+
 ChunkMesh::Builder::Builder(ChunkSection& section, ChunkMesh& mesh) : mSection(&section), mMesh(&mesh)
 {
 }
@@ -81,6 +87,7 @@ struct AdjacentBlockPositions
 
 void ChunkMesh::Builder::build()
 {
+	mMesh->release();
 	BlockRegistry& registry = BlockRegistry::instance();
 	AdjacentBlockPositions directions;
 	mBlock = mSection->begin();

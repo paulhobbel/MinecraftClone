@@ -3,6 +3,7 @@
 #include "../World/Event/PlayerDigEvent.h"
 #include "../Util/Ray.h"
 #include "../Input/Mouse.h"
+#include "../Util/Stopwatch.h"
 
 PlayingState::PlayingState(Game& game): GameState(game), mWorld(mGame->getCamera())
 {
@@ -16,6 +17,8 @@ void PlayingState::update(double deltaTime)
 {
 	mPlayer.handleInput(*mGame->getWindow());
 
+	static Stopwatch stopwatch;
+
 	for (Ray ray({ mPlayer.position.x, mPlayer.position.y + 0.6f, mPlayer.position.z }, mPlayer.rotation);
 		ray.getLength() < 6;
 		ray.step(0.05))
@@ -24,10 +27,14 @@ void PlayingState::update(double deltaTime)
 
 		auto block = mWorld.getBlock(rayEnd.x, rayEnd.y, rayEnd.z);
 
-		if (block != BlockId::Air)
+		if (stopwatch.elapsedTime() > 0.2)
 		{
-			if(Mouse::isButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
-				mWorld.addEvent<PlayerDigEvent>(mPlayer, ray.getEnd());
+			if (block != BlockId::Air)
+			{
+				stopwatch.start();
+				if (Mouse::isButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
+					mWorld.addEvent<PlayerDigEvent>(mPlayer, ray.getEnd());
+			}
 		}
 	}
 

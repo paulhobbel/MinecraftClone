@@ -17,6 +17,7 @@ World::World(const Camera& camera) : mChunkProvider(*this)
 	{
 		mChunkThreads.emplace_back([&]()
 			{
+				//std::this_thread::
 				std::cout << "[DEBUG/World/Loader_Thread] Started async chunk loader." << std::endl;
 				loadChunks(camera);
 			});
@@ -65,9 +66,9 @@ void World::updateChunk(int blockX, int blockY, int blockZ)
 {
 	std::unique_lock<std::mutex> lock(mMainMutex);
 
-	auto addChunkToUpdateBatch = [&](const glm::ivec3& key, ChunkSection& section)
+	auto addChunkToUpdateBatch = [&](const glm::ivec3& key, std::shared_ptr<ChunkSection> section)
 	{
-		mChunkUpdates.emplace(key, &section);
+		mChunkUpdates.emplace(key, section);
 	};
 
 	auto chunkPosition = PositionUtil::worldToChunkPosition(blockX, blockY, blockZ);
@@ -75,6 +76,7 @@ void World::updateChunk(int blockX, int blockY, int blockZ)
 
 	glm::ivec3 key(chunkPosition.x, chunkSectionY, chunkPosition.z);
 	addChunkToUpdateBatch(key, mChunkProvider.getChunk(chunkPosition.x, chunkPosition.z).getSection(chunkSectionY));
+	//mChunkUpdates.emplace(key, mChunkProvider.getChunk(chunkPosition.x, chunkPosition.z).getSection(chunkSectionY));
 
 	auto sectionBlockXZ = PositionUtil::worldToBlockPosition(blockX, blockY, blockZ);
 	auto sectionBlockY = blockY % CHUNK_SIZE;
@@ -118,7 +120,7 @@ void World::render(MainRenderer& renderer, const Camera& camera)
 	std::unique_lock<std::mutex> lock(mMainMutex);
 
 	auto& chunks = mChunkProvider.getChunks();
-	for (auto iterator = chunks.begin(); iterator != chunks.end();)
+	for (auto iterator = chunks.begin(); iterator != chunks.end(); ++iterator)
 	{
 		auto chunk = iterator->second;
 		//std::cout << "[DEBUG/World] Rendering chunk:" << glm::to_string(chunk.GetPosition()) << std::endl;
@@ -144,7 +146,6 @@ void World::render(MainRenderer& renderer, const Camera& camera)
 		//else
 		//{
 		chunk->render(renderer, camera);
-		iterator++;
 		//}
 		//renderer.RenderChunk(chunk);
 	}
@@ -198,7 +199,7 @@ void World::loadChunks(const Camera& camera)
 		if (!isMeshMade)
 			loadDistance++;
 
-		if (loadDistance > 12)
+		if (loadDistance > 5)
 			loadDistance = 2;
 	}
 }
@@ -210,6 +211,7 @@ void World::updateChunks()
 	{
 		auto s = c.second;
 		s->makeMesh();
+		s->getMesh()->setHasBuffered(false);
 	}
 	mChunkUpdates.clear();
 }

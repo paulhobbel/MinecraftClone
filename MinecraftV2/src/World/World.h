@@ -39,7 +39,7 @@ private:
 	void updateChunks();
 
 	std::vector<std::unique_ptr<IWorldEvent>> mEvents;
-	std::unordered_map<glm::ivec3, ChunkSection*> mChunkUpdates;
+	std::unordered_map<glm::ivec3, std::shared_ptr<ChunkSection>> mChunkUpdates;
 
 	ChunkProvider mChunkProvider;
 

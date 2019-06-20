@@ -26,5 +26,6 @@ void Stopwatch::stop() noexcept
 
 double Stopwatch::elapsedTime() noexcept
 {
+	mElapsed = std::chrono::high_resolution_clock::now() - mStartTime;
 	return mElapsed.count();
 }

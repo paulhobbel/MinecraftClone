@@ -13,11 +13,11 @@ public:
 	void init(const ResourceManager& resourceManager);
 
 	//void compileChunkSection(ChunkSection& )
-	void addMesh(const ChunkMesh& mesh);
+	void addMesh(std::shared_ptr<ChunkMesh> mesh);
 	void render(const Camera& camera);
 
 private:
-	std::vector<const ChunkMesh*> mChunks;
+	std::vector<std::shared_ptr<ChunkMesh>> mChunks;
 	ChunkShader mShader;
 	AtlasTexture* mTexture;
 	SimpleTexture testTexture;

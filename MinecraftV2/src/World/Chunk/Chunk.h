@@ -21,7 +21,7 @@ public:
 	void setBlock(int x, int y, int z, Block block);
 	bool isLoaded() const noexcept;
 
-	ChunkSection& getSection(int index);
+	std::shared_ptr<ChunkSection> getSection(int index);
 	glm::ivec2& getPosition();
 
 	void load(TerrainGenerator& generator);

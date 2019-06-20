@@ -6,7 +6,9 @@
 #include "../../Input/Keyboard.h"
 #include "../../Input/Mouse.h"
 
-Player::Player()
+#include "../World.h"
+
+Player::Player() : Entity({ 2500, 125, 2500 }, { 0.f, 0.f, 0.f }, { 0.3f, 1.f, 0.3f })
 {
 }
 
@@ -43,7 +45,8 @@ void Player::handleInput(GameWindow& window)
 
 	if (Keyboard::isPressed(GLFW_KEY_SPACE))
 	{
-		mAcceleration.y += .2f;
+		jump();
+		//mAcceleration.y += .2f;
 	}
 
 	if (Keyboard::isPressed(GLFW_KEY_LEFT_SHIFT))
@@ -82,11 +85,90 @@ void Player::update(double deltaTime, World& world)
 	velocity += mAcceleration;
 	mAcceleration = { 0, 0, 0 };
 
+	if (!mFlying)
+	{
+		if (!mOnGround)
+		{
+			velocity.y -= 40 * deltaTime;
+		}
+		mOnGround = false;
+	}
+
+	if (position.y <= 0 && !mFlying) {
+		position.y = 300;
+	}
+
 	position.x += velocity.x * deltaTime;
+	collide(world, { velocity.x, 0, 0 }, deltaTime);
+
 	position.y += velocity.y * deltaTime;
+	collide(world, { 0, velocity.y, 0 }, deltaTime);
+
 	position.z += velocity.z * deltaTime;
+	collide(world, { 0, 0, velocity.z }, deltaTime);
+
+	boundingBox.update(position);
 
 	velocity.x *= 0.95f;
 	velocity.y *= 0.95f;
 	velocity.z *= 0.95f;
+}
+
+void Player::collide(World& world, const glm::vec3& vel, double dt)
+{
+	for (int x = position.x - boundingBox.dimensions.x; x < position.x + boundingBox.dimensions.x; x++)
+		for (int y = position.y - boundingBox.dimensions.y; y < position.y + 0.7; y++)
+			for (int z = position.z - boundingBox.dimensions.z; z < position.z + boundingBox.dimensions.z; z++)
+			{
+				auto block = world.getBlock(x, y, z);
+
+				if (block != BlockId::Air)
+				{
+					if (vel.y > 0)
+					{
+						position.y = y - boundingBox.dimensions.y;
+						velocity.y = 0;
+					}
+					else if (vel.y < 0)
+					{
+						mOnGround = true;
+						position.y = y + boundingBox.dimensions.y + 1;
+						velocity.y = 0;
+					}
+
+					if (vel.x > 0)
+					{
+						position.x = x - boundingBox.dimensions.x;
+					}
+					else if (vel.x < 0)
+					{
+						position.x = x + boundingBox.dimensions.x + 1;
+					}
+
+					if (vel.z > 0)
+					{
+						position.z = z - boundingBox.dimensions.z;
+					}
+					else if (vel.z < 0)
+					{
+						position.z = z + boundingBox.dimensions.z + 1;
+					}
+				}
+			}
+}
+
+void Player::jump()
+{
+	if (!mFlying)
+	{
+		if (mOnGround)
+		{
+			mOnGround = false;
+			mAcceleration.y += .2f * 50;
+		}
+	}
+	else
+	{
+		mAcceleration.y += .2f * 3;
+	}
 }

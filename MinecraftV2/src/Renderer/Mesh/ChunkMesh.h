@@ -13,6 +13,8 @@ public:
 	void setHasBuffered(bool flag);
 	bool hasBuffered() const;
 
+	void release() override;
+
 	class Builder
 	{
 	public:

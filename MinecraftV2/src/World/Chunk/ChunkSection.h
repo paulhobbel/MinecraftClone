@@ -27,9 +27,9 @@ public:
 	bool hasBuffered();
 	void bufferMesh();
 
-	bool hasMesh();
+	bool hasMesh() const;
 	void makeMesh();
-	const ChunkMesh& getMesh();
+	std::shared_ptr<ChunkMesh> getMesh() const;
 
 	const Block* begin() { return &mBlocks[0]; }
 	//std::array<Block, CHUNK_VOLUME> getBlocks();
@@ -46,7 +46,8 @@ private:
 		//std::array<Block, CHUNK_VOLUME> mBlocks;
 
 	bool mHasMesh = false;
-	ChunkMesh mMesh;
+	//ChunkMesh mMesh;
+	std::shared_ptr<ChunkMesh> mMesh;
 
 	World* mWorld;
 };

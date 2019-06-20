@@ -45,6 +45,8 @@ GameWindow::GameWindow(int width, int height, const std::string& title)
 		std::cout << "[ERROR/GameWindow] code: " << errorCode << ", description: " << description << std::endl;
 	});
 
+	glfwSwapInterval(1);
+
 	glfwFocusWindow(mHandle);
 	mFocused = true;
 }

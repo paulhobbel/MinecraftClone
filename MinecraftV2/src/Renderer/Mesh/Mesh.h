@@ -15,7 +15,7 @@ public:
 
 	int getIndicesCount() const;
 
-	void release();
+	virtual void release();
 
 	std::vector<GLfloat> vertices;
 	std::vector<GLfloat> texCoords;

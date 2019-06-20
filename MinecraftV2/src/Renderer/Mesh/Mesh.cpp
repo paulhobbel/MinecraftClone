@@ -50,21 +50,21 @@ void Mesh::release()
 	if (mVao)
 	{
 		glDeleteVertexArrays(1, &mVao);
-		//std::cout << "[DEBUG/Model] Releasing VAO " << m_vao << ", prevented an internal memory leak!" << std::endl;
+		std::cout << "[DEBUG/Model] Releasing VAO " << mVao << ", prevented an internal memory leak!" << std::endl;
+		mVao = 0;
 	}
 
 	if (!mVboBuffers.empty())
+	{
 		glDeleteBuffers(static_cast<GLsizei>(mVboBuffers.size()),
 			mVboBuffers.data());
 
-	// Feeling pretty stupid it took me 30 minutes to figure the part out below...
-	mVboBuffers.clear();
-	mVboBuffers.shrink_to_fit();
-
-	mVboCount = 0;
+		mVboBuffers.clear();
+		mVboBuffers.shrink_to_fit();
+		mVboCount = 0;
+	}
 
 	// Reset render info
-	mVao = 0;
 	mIndicesCount = 0;
 }
 
@@ -102,5 +102,6 @@ void Mesh::addEbo(std::vector<GLuint> buffer)
 
 	mIndicesCount = static_cast<GLuint>(buffer.size());
 
+	mVboBuffers.push_back(ebo);
 	//m_buffers.push_back(ebo);
 }

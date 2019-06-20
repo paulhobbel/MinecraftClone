@@ -93,14 +93,14 @@ bool Chunk::outOfBounds(int x, int y, int z) const noexcept
 	return false;
 }
 
-ChunkSection& Chunk::getSection(int index)
+std::shared_ptr<ChunkSection> Chunk::getSection(int index)
 {
-	static ChunkSection errorSection({ 444,444,444 }, *mWorld);
+	static auto errorSection = std::make_shared<ChunkSection>(glm::ivec3( 444,444,444 ), *mWorld);
 
 	if (index >= (int)mSections.size() || index < 0)
 		return errorSection;
 
-	return *mSections[index];
+	return mSections[index];
 }
 
 glm::ivec2& Chunk::getPosition()

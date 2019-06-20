@@ -12,9 +12,9 @@ void ChunkRenderer::init(const ResourceManager& resourceManager)
 	testTexture.loadFromFileS("res/textures/blocks/dirt.png");
 }
 
-void ChunkRenderer::addMesh(const ChunkMesh& mesh)
+void ChunkRenderer::addMesh(std::shared_ptr<ChunkMesh> mesh)
 {
-	mChunks.push_back(&mesh);
+	mChunks.push_back(mesh);
 }
 
 void ChunkRenderer::render(const Camera& camera)
@@ -39,8 +39,7 @@ void ChunkRenderer::render(const Camera& camera)
 			continue;
 		}
 
-		//mesh->bindVao();
-		glBindVertexArray(mesh->mVao);
+		mesh->bindVao();
 		glDrawElements(GL_TRIANGLES, mesh->getIndicesCount(), GL_UNSIGNED_INT, nullptr);
 	}
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
