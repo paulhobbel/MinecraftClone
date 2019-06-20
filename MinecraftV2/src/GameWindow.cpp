@@ -22,6 +22,12 @@ GameWindow::GameWindow(int width, int height, const std::string& title)
 		self.onInput(key, scanCode, action, mods);
 	});
 
+	glfwSetMouseButtonCallback(mHandle, [](GLFWwindow* handle, int button, int action, int mods) {
+		auto& self = *static_cast<GameWindow*>(glfwGetWindowUserPointer(handle));
+
+		self.onMouseButton(button, action);
+		});
+
 	glfwSetWindowFocusCallback(mHandle, [](GLFWwindow * handle, int flag) {
 		auto& self = *static_cast<GameWindow*>(glfwGetWindowUserPointer(handle));
 
@@ -100,6 +106,11 @@ void GameWindow::setInputCallback(std::function<void(int key, int scanCode, int 
 	mInputCb = callback;
 }
 
+void GameWindow::setMouseButtonCallback(std::function<void(int, int)> callback)
+{
+	mMouseCb = callback;
+}
+
 void GameWindow::setGLContext() const
 {
 	std::cout << "[INFO/GameWindow] Initializing OpenGL" << std::endl;
@@ -134,4 +145,10 @@ void GameWindow::onInput(int key, int scanCode, int action, int mods) const
 	if (mInputCb)
 		mInputCb(key, scanCode, action, mods);
 
+}
+
+void GameWindow::onMouseButton(int button, int state)
+{
+	if (mMouseCb)
+		mMouseCb(button, state);
 }

@@ -31,11 +31,14 @@ public:
 	void render(MainRenderer& renderer, const Camera& camera);
 
 private:
+	void addSection();
+	void addSectionsBlockTarget(int blockY);
+	void addSectionsIndexTarget(int index);
 	bool outOfBounds(int x, int y, int z) const noexcept;
 
 	bool mLoaded = false;
 
-	std::vector<ChunkSection> mSections;
+	std::vector<std::shared_ptr<ChunkSection>> mSections;
 	glm::ivec2 mPosition;
 
 	World* mWorld;

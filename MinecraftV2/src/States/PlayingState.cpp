@@ -1,5 +1,8 @@
 ﻿#include "PlayingState.h"
 #include "../Game.h"
+#include "../World/Event/PlayerDigEvent.h"
+#include "../Util/Ray.h"
+#include "../Input/Mouse.h"
 
 PlayingState::PlayingState(Game& game): GameState(game), mWorld(mGame->getCamera())
 {
@@ -12,6 +15,22 @@ PlayingState::PlayingState(Game& game): GameState(game), mWorld(mGame->getCamera
 void PlayingState::update(double deltaTime)
 {
 	mPlayer.handleInput(*mGame->getWindow());
+
+	for (Ray ray({ mPlayer.position.x, mPlayer.position.y + 0.6f, mPlayer.position.z }, mPlayer.rotation);
+		ray.getLength() < 6;
+		ray.step(0.05))
+	{
+		const auto rayEnd = ray.getEnd();
+
+		auto block = mWorld.getBlock(rayEnd.x, rayEnd.y, rayEnd.z);
+
+		if (block != BlockId::Air)
+		{
+			if(Mouse::isButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
+				mWorld.addEvent<PlayerDigEvent>(mPlayer, ray.getEnd());
+		}
+	}
+
 	mPlayer.update(deltaTime, mWorld);
 	mWorld.update(mGame->getCamera());
 }

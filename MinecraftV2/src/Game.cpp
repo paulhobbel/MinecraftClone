@@ -3,6 +3,7 @@
 #include "Input/Keyboard.h"
 #include "Game.h"
 #include "States/PlayingState.h"
+#include "Input/Mouse.h"
 
 //#include "World/Entities/Player.h"
 
@@ -17,11 +18,15 @@ Game::Game()
 	//m_renderer.Init();
 
 	mWindow->setResizeCallback([this](glm::vec2 windowSize) {
-		//m_camera.SetPerspective(windowSize);
+		mCamera.setPerspective(windowSize);
 	});
 
-	mWindow->setInputCallback([this](int key, int scanCode, int action, int mods) {
+	mWindow->setInputCallback([](int key, int scanCode, int action, int mods) {
 		Keyboard::updateKey(key, action);
+	});
+
+	mWindow->setMouseButtonCallback([](int button, int action) {
+		Mouse::updateButton(button, action);
 	});
 
 	mResourceManager->loadBlocks();

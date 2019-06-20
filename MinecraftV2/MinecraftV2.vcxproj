@@ -154,6 +154,7 @@
     <ClCompile Include="src\States\PlayingState.cpp" />
     <ClCompile Include="src\Util\FileUtil.cpp" />
     <ClCompile Include="src\Util\PositionUtil.cpp" />
+    <ClCompile Include="src\Util\Ray.cpp" />
     <ClCompile Include="src\Util\Stopwatch.cpp" />
     <ClCompile Include="src\ViewFrustum.cpp" />
     <ClCompile Include="src\World\Block\Block.cpp" />
@@ -164,6 +165,7 @@
     <ClCompile Include="src\World\Chunk\ChunkProvider.cpp" />
     <ClCompile Include="src\World\Chunk\ChunkSection.cpp" />
     <ClCompile Include="src\World\Entity\Player.cpp" />
+    <ClCompile Include="src\World\Event\PlayerDigEvent.cpp" />
     <ClCompile Include="src\World\Generation\FlatTerrainGenerator.cpp" />
     <ClCompile Include="src\World\World.cpp" />
   </ItemGroup>
@@ -199,6 +201,7 @@
     <ClInclude Include="src\States\PlayingState.h" />
     <ClInclude Include="src\Util\FileUtil.h" />
     <ClInclude Include="src\Util\PositionUtil.h" />
+    <ClInclude Include="src\Util\Ray.h" />
     <ClInclude Include="src\Util\Stopwatch.h" />
     <ClInclude Include="src\ViewFrustum.h" />
     <ClInclude Include="src\World\Block\Block.h" />
@@ -210,6 +213,8 @@
     <ClInclude Include="src\World\Chunk\ChunkProvider.h" />
     <ClInclude Include="src\World\Chunk\ChunkSection.h" />
     <ClInclude Include="src\World\Entity\Player.h" />
+    <ClInclude Include="src\World\Event\IWorldEvent.h" />
+    <ClInclude Include="src\World\Event\PlayerDigEvent.h" />
     <ClInclude Include="src\World\Generation\FlatTerrainGenerator.h" />
     <ClInclude Include="src\World\Generation\TerrainGenerator.h" />
     <ClInclude Include="src\World\World.h" />

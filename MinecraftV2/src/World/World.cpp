@@ -51,6 +51,66 @@ Block World::getBlock(int x, int y, int z)
 
 void World::update(const Camera& camera)
 {
+	for(auto& event : mEvents)
+	{
+		event->handle(*this);
+	}
+
+	mEvents.clear();
+
+	updateChunks();
+}
+
+void World::updateChunk(int blockX, int blockY, int blockZ)
+{
+	std::unique_lock<std::mutex> lock(mMainMutex);
+
+	auto addChunkToUpdateBatch = [&](const glm::ivec3& key, ChunkSection& section)
+	{
+		mChunkUpdates.emplace(key, &section);
+	};
+
+	auto chunkPosition = PositionUtil::worldToChunkPosition(blockX, blockY, blockZ);
+	auto chunkSectionY = blockY / CHUNK_SIZE;
+
+	glm::ivec3 key(chunkPosition.x, chunkSectionY, chunkPosition.z);
+	addChunkToUpdateBatch(key, mChunkProvider.getChunk(chunkPosition.x, chunkPosition.z).getSection(chunkSectionY));
+
+	auto sectionBlockXZ = PositionUtil::worldToBlockPosition(blockX, blockY, blockZ);
+	auto sectionBlockY = blockY % CHUNK_SIZE;
+
+	if (sectionBlockXZ.x == 0)
+	{
+		glm::ivec3 newKey(chunkPosition.x - 1, chunkSectionY, chunkPosition.z);
+		addChunkToUpdateBatch(newKey, mChunkProvider.getChunk(newKey.x, newKey.z).getSection(newKey.y));
+	}
+	else if (sectionBlockXZ.x == CHUNK_SIZE - 1)
+	{
+		glm::ivec3 newKey(chunkPosition.x + 1, chunkSectionY, chunkPosition.z);
+		addChunkToUpdateBatch(newKey, mChunkProvider.getChunk(newKey.x, newKey.z).getSection(newKey.y));
+	}
+
+	if (sectionBlockY == 0)
+	{
+		glm::ivec3 newKey(chunkPosition.x, chunkSectionY - 1, chunkPosition.z);
+		addChunkToUpdateBatch(newKey, mChunkProvider.getChunk(newKey.x, newKey.z).getSection(newKey.y));
+	}
+	else if (sectionBlockY == CHUNK_SIZE - 1)
+	{
+		glm::ivec3 newKey(chunkPosition.x, chunkSectionY + 1, chunkPosition.z);
+		addChunkToUpdateBatch(newKey, mChunkProvider.getChunk(newKey.x, newKey.z).getSection(newKey.y));
+	}
+
+	if (sectionBlockXZ.z == 0)
+	{
+		glm::ivec3 newKey(chunkPosition.x, chunkSectionY, chunkPosition.z - 1);
+		addChunkToUpdateBatch(newKey, mChunkProvider.getChunk(newKey.x, newKey.z).getSection(newKey.y));
+	}
+	else if (sectionBlockXZ.z == CHUNK_SIZE - 1)
+	{
+		glm::ivec3 newKey(chunkPosition.x, chunkSectionY, chunkPosition.z + 1);
+		addChunkToUpdateBatch(newKey, mChunkProvider.getChunk(newKey.x, newKey.z).getSection(newKey.y));
+	}
 }
 
 void World::render(MainRenderer& renderer, const Camera& camera)
@@ -141,4 +201,15 @@ void World::loadChunks(const Camera& camera)
 		if (loadDistance > 12)
 			loadDistance = 2;
 	}
+}
+
+void World::updateChunks()
+{
+	std::unique_lock<std::mutex> lock(mMainMutex);
+	for (auto& c : mChunkUpdates)
+	{
+		auto s = c.second;
+		s->makeMesh();
+	}
+	mChunkUpdates.clear();
 }

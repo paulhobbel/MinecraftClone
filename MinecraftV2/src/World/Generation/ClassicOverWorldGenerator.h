@@ -15,6 +15,7 @@
 #include "../Biome/DesertBiome.h"
 #include "../Biome/OceanBiome.h"
 #include "../Biome/LightForest.h"
+#include <array>
 
 class Chunk;
 
@@ -37,8 +38,8 @@ class ClassicOverWorldGenerator : public TerrainGenerator
 
         const Biome& getBiome(int x, int z) const;
 
-        Array2D<int, CHUNK_SIZE>        m_heightMap;
-        Array2D<int, CHUNK_SIZE + 1>    m_biomeMap;
+        std::array<int, CHUNK_SIZE>        m_heightMap;
+        std::array<int, CHUNK_SIZE + 1>    m_biomeMap;
 
         Random<std::minstd_rand> m_random;
 

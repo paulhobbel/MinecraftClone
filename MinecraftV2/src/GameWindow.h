@@ -27,6 +27,7 @@ public:
 
 	void setResizeCallback(std::function<void(glm::vec2)> callback);
 	void setInputCallback(std::function<void(int, int, int, int)> callback);
+	void setMouseButtonCallback(std::function<void(int, int)> callback);
 
 	void setGLContext() const;
 	void swapBuffers() const;
@@ -35,10 +36,12 @@ private:
 	bool mFocused;
 	std::function<void(glm::vec2 size)> mResizeCb;
 	std::function<void(int key, int scanCode, int action, int mods)> mInputCb;
+	std::function<void(int button, int state)> mMouseCb;
 
 	void onResize(int width, int height) const;
 	void onFocus(bool focussed);
 	void onInput(int key, int scanCode, int action, int mods) const;
+	void onMouseButton(int button, int state);
 
 	GLFWwindow* mHandle;
 };

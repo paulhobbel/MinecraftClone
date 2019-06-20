@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "Chunk/ChunkProvider.h"
+#include "Event/IWorldEvent.h"
 
 struct Block;
 class MainRenderer;
@@ -27,9 +28,18 @@ public:
 
 	ChunkProvider& getChunkProvider();
 
+	template<typename T, typename... Args>
+	void addEvent(Args&& ... args)
+	{
+		mEvents.push_back(std::make_unique<T>(std::forward<Args>(args)...));
+	}
+
 private:
 	void loadChunks(const Camera& camera);
 	void updateChunks();
+
+	std::vector<std::unique_ptr<IWorldEvent>> mEvents;
+	std::unordered_map<glm::ivec3, ChunkSection*> mChunkUpdates;
 
 	ChunkProvider mChunkProvider;
 

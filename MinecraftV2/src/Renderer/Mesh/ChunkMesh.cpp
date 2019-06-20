@@ -95,7 +95,7 @@ void ChunkMesh::Builder::build()
 		uint8_t z = (i / CHUNK_SIZE) % CHUNK_SIZE;
 
 		Block block = *mBlock;
-
+		mBlock++;
 
 		if (block == BlockId::Air)
 			continue;
@@ -116,7 +116,7 @@ void ChunkMesh::Builder::build()
 		tryAddFace(data->getFace(SOUTH), position, directions.front);
 		tryAddFace(data->getFace(NORTH), position, directions.back);
 
-		mBlock++;
+		//mBlock++;
 	}
 }
 

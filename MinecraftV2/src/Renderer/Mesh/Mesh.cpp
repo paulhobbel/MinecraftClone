@@ -32,9 +32,11 @@ void Mesh::bufferMesh()
 
 	vertices.clear();
 	texCoords.clear();
+	lights.clear();
 	indices.clear();
 	vertices.shrink_to_fit();
 	texCoords.shrink_to_fit();
+	lights.shrink_to_fit();
 	indices.shrink_to_fit();
 }
 
@@ -57,6 +59,7 @@ void Mesh::release()
 
 	// Feeling pretty stupid it took me 30 minutes to figure the part out below...
 	mVboBuffers.clear();
+	mVboBuffers.shrink_to_fit();
 
 	mVboCount = 0;
 
