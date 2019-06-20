@@ -14,6 +14,11 @@ void TextureAtlasSprite::loadSprite()
 	mImage = RawImage::loadImage("res/textures/" + mName + ".png");
 }
 
+void TextureAtlasSprite::unloadSprite()
+{
+	delete mImage;
+}
+
 bool TextureAtlasSprite::isLinked() const
 {
 	return mLinked;
@@ -36,6 +41,16 @@ int TextureAtlasSprite::getHeight() const
 glm::ivec2 TextureAtlasSprite::getOrigin() const
 {
 	return mOrigin;
+}
+
+glm::vec2 TextureAtlasSprite::getMinUv() const
+{
+	return mMinUv;
+}
+
+glm::vec2 TextureAtlasSprite::getMaxUv() const
+{
+	return mMaxUv;
 }
 
 RawImage& TextureAtlasSprite::getImage() const

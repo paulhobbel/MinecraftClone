@@ -1,21 +1,21 @@
 #include <iostream>
 
-#include "Util/FileUtil.h"
-#include "Resources/ModelBlock.h"
-
-#include "ResourceLoader.h"
-
+#include "Game.h"
 
 
 int main(int argc, char* argv[])
 {
-	std::cout << "[INFO/ResourceLoader] Initializing" << std::endl;
+	//std::cout << "[INFO/ResourceManager] Initializing" << std::endl;
 
-	ResourceLoader* loader = new ResourceLoader();
+	//ResourceManager* loader = new ResourceManager();
 
-	loader->loadBlocks();
+	//loader->loadBlocks();
 
-	std::cin.get();
+	//std::cin.get();
+
+	Game game;
+	game.run();
+
 
 	return 0;
 }

@@ -5,7 +5,7 @@
 class Keyboard
 {
 public:
-	static void UpdateKey(int key, int state);
+	static void updateKey(int key, int state);
 
 	static bool IsReleased(int key);
 	static bool IsPressed(int key);
