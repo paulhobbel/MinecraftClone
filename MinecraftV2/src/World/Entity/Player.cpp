@@ -7,6 +7,7 @@
 #include "../../Input/Mouse.h"
 
 #include "../World.h"
+#include "../../Util/Stopwatch.h"
 
 Player::Player() : Entity({ 2500, 125, 2500 }, { 0.f, 0.f, 0.f }, { 0.3f, 1.f, 0.3f })
 {
@@ -14,12 +15,22 @@ Player::Player() : Entity({ 2500, 125, 2500 }, { 0.f, 0.f, 0.f }, { 0.3f, 1.f, 0
 
 void Player::handleInput(GameWindow& window)
 {
+	static Stopwatch stopwatch;
+	if (stopwatch.elapsedTime() > 0.2)
+	{
+		if (Keyboard::isPressed(GLFW_KEY_F))
+		{
+			stopwatch.start();
+			mFlying = !mFlying;
+		}
+	}
+
 	if (Keyboard::isPressed(GLFW_KEY_W))
 	{
 		float speed = .2f;
 		if (Keyboard::isPressed(GLFW_KEY_LEFT_CONTROL))
 		{
-			speed *= 3;
+			speed *= 5;
 		}
 		mAcceleration.x += -glm::cos(glm::radians(rotation.y + 90)) * speed;
 		mAcceleration.z += -glm::sin(glm::radians(rotation.y + 90)) * speed;
@@ -49,9 +60,9 @@ void Player::handleInput(GameWindow& window)
 		//mAcceleration.y += .2f;
 	}
 
-	if (Keyboard::isPressed(GLFW_KEY_LEFT_SHIFT))
+	if (Keyboard::isPressed(GLFW_KEY_LEFT_SHIFT) && mFlying)
 	{
-		mAcceleration.y -= .2f;
+		mAcceleration.y -= .2f * 3;
 	}
 
 	static auto lastMousePosition = Mouse::getPosition(&window);
@@ -109,9 +120,19 @@ void Player::update(double deltaTime, World& world)
 
 	boundingBox.update(position);
 
-	velocity.x *= 0.95f;
-	velocity.y *= 0.95f;
-	velocity.z *= 0.95f;
+	
+	if (mFlying)
+	{
+		velocity.x *= 0.95f;
+		velocity.y *= 0.95f;
+		velocity.z *= 0.95f;
+	} 
+	else
+	{
+		velocity.x *= 0.92f;
+		velocity.z *= 0.92f;
+	}
+	
 }
 
 void Player::collide(World& world, const glm::vec3& vel, double dt)

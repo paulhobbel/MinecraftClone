@@ -50,7 +50,6 @@ void Mesh::release()
 	if (mVao)
 	{
 		glDeleteVertexArrays(1, &mVao);
-		std::cout << "[DEBUG/Model] Releasing VAO " << mVao << ", prevented an internal memory leak!" << std::endl;
 		mVao = 0;
 	}
 
